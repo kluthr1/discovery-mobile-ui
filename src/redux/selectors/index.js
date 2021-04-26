@@ -257,11 +257,18 @@ export const selectedRecordsGroupedByTypeSelector = createSelector(
 );
 
 const savedItemsSelector = createSelector(
-  [resourcesSelector, activeCollectionResourceIdsSelector],
-  (resources, saved) => values(resources)
+  [resourcesSelector, activeCollectionResourceIdsSelector, activeCollectionSelector],
+  (resources, saved, collection) => {
+    const { records } = collection
+    return values(resources)
     .filter(({ id }) => saved[id])
     .map(pickTimelineFields)
-    .sort(sortByDate),
+    .map((resource) => {
+      resource.dateSaved = records[resource.id].dateSaved
+      return resource
+    })
+    .sort(sortByDate)
+  }
 );
 
 // used by SubTypeAccordion in CatalogScreen and RecordType sorting in DetailsPanel
@@ -321,6 +328,46 @@ export const savedRecordsByRecordDateSelector = createSelector(
       }, []);
   },
 );
+
+export const savedRecordsBySavedDaySelector = createSelector(
+  [savedItemsSelector, (_, ownProps) => ownProps],
+  (items, ownProps) => {
+    const { isDescending } = ownProps
+    const sortedItems = isDescending ? [...items].reverse() : items
+    const typeMap = sortedItems
+    .reduce((acc, record, index) => {
+      if (index === 0 ) {
+        const formattedDay = formatDate('4-4-2010');
+        return produce(acc, (draft) => {
+          // eslint-disable-next-line no-param-reassign
+          draft[formattedDay] = draft[formattedDay] ?? [];
+          draft[formattedDay].push(record.id);
+        });
+      }
+      const { dateSaved } = record;
+      const formattedDay = formatDate(dateSaved);
+      return produce(acc, (draft) => {
+        // eslint-disable-next-line no-param-reassign
+        draft[formattedDay] = draft[formattedDay] ?? [];
+        draft[formattedDay].push(record.id);
+      });
+    }, {});
+
+    const ascDates = ([day1], [day2]) => day1 > day2 ? -1 : 1
+    const descDates = ([day1], [day2]) => day1 < day2 ? -1 : 1
+    const dateSortingDirection = isDescending ? descDates : ascDates
+    return Object
+    .entries(typeMap)
+    .sort(dateSortingDirection)
+    .reduce((acc, [date, recordIds]) => {
+      return acc.concat({
+        date,
+        recordIds
+      })
+    }, [])
+
+  }
+)
 
 export const orderedResourceTypeFiltersSelector = createSelector(
   [activeCollectionResourceTypeFiltersSelector],
