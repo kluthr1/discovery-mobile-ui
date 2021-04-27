@@ -13,7 +13,7 @@ import { arrayOf, func, shape } from 'prop-types';
 
 import Timeline from '../components/Timeline';
 import ResourceTypePicker from '../components/ResourceTypePicker';
-import SubTypeAccordionsContainer from '../components/SubTypeAccordion/SubTypeAccordionsContainer';
+import SubTypeAccordionsContainer from '../components/SubTypeAccordionsContainer'
 import Colors from '../constants/Colors';
 import FilterDrawer from '../components/FilterDrawer/FilterDrawer';
 import DetailsPanel from '../components/DetailsPanel';

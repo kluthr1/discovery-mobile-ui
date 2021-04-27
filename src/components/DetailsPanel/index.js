@@ -14,7 +14,7 @@ import Colors from '../../constants/Colors';
 import SortingHeader from './SortingHeader';
 import { SORT_DESC, sortFields } from '../../constants/sorting';
 import DateAccordionsContainer from '../DateAccordionContainer/DateAccordionsContainer';
-import SubTypeAccordionsContainer from '../SubTypeAccordion/SubTypeAccordionsContainer';
+import SubTypeAccordionsContainer from '../SubTypeAccordionsContainer';
 import { savedRecordsGroupedByTypeSelector } from '../../redux/selectors';
 import TimeSavedAccordionsContainer from '../TimeSavedAccordionsContainer';
 
