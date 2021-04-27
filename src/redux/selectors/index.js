@@ -212,9 +212,9 @@ const filteredItemsInDateRangeSelector = createSelector(
   },
 );
 
-const sortedGroupedRecordsByType = (records, isDescending) => {
+const sortedGroupedRecordsByType = ({ records, isDescending, descSortOnly }) => {
   // eslint-disable-next-line no-nested-ternary
-  const sortedRecords = isDescending === undefined
+  const sortedRecords = descSortOnly
     ? [...records].reverse()
     : (isDescending ? [...records].reverse() : records);
 
@@ -251,7 +251,7 @@ export const selectedRecordsGroupedByTypeSelector = createSelector(
       return [];
     }
 
-    return sortedGroupedRecordsByType(items)
+    return sortedGroupedRecordsByType({ records: items, descSortOnly: true })
       .filter((group) => group.type === selectedResourceType);
   },
 );
@@ -279,7 +279,7 @@ export const savedRecordsGroupedByTypeSelector = createSelector(
     const { detailsPanelSortingState: sortingState } = collection;
     const { RECORD_TYPE } = sortFields;
     const isDescending = sortingState.sortDirections[RECORD_TYPE] === SORT_DESC;
-    return sortedGroupedRecordsByType(savedItems, isDescending);
+    return sortedGroupedRecordsByType({ records: savedItems, isDescending });
   },
 );
 
