@@ -25,7 +25,7 @@ const AccordionHeader = ({ data, expanded }) => {
     ? <Ionicons name="chevron-up" size={16} color={Colors.accordionChevronIcon} />
     : <Ionicons name="chevron-down" size={16} color={Colors.accordionChevronIcon} />;
 
-  console.info('AccordionHeader: ', data, expanded);
+  // console.info('AccordionHeader: ', data, expanded);
 
   const {
     title, content, fromDetailsPanel, headerCount, activeCollectionId,
