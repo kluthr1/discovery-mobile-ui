@@ -73,42 +73,38 @@ const SubTypeAccordion = ({
   activeCollectionId,
   headerLabel,
   fromDetailsPanel,
-}) => {
-  const renderContent = (item) => item.content.map(
-    (resourceId, cardIndex) => (
-      <ResourceCard
-        key={resourceId}
-        index={cardIndex}
-        resourceId={resourceId}
-        collectionId={activeCollectionId}
-        fromDetailsPanel={fromDetailsPanel}
-      />
-    ),
-  );
-
-  return (
-    <View style={styles.accordionContainer}>
-      <Accordion
-        style={styles.accordion}
-        dataArray={[{
-          title: headerLabel,
-          content: resourceIds,
-          fromDetailsPanel,
-          headerCount,
-          activeCollectionId,
-        }]}
-        expanded={[]}
-        renderHeader={(data, expanded) => (
-          <AccordionHeader
-            expanded={expanded}
-            data={data}
+}) => (
+  <View style={styles.accordionContainer}>
+    <Accordion
+      style={styles.accordion}
+      dataArray={[{
+        title: headerLabel,
+        content: resourceIds,
+        fromDetailsPanel,
+        headerCount,
+        activeCollectionId,
+      }]}
+      expanded={[]}
+      renderHeader={(data, expanded) => (
+        <AccordionHeader
+          expanded={expanded}
+          data={data}
+        />
+      )}
+      renderContent={(data) => data.content.map(
+        (resourceId, cardIndex) => (
+          <ResourceCard
+            key={resourceId}
+            index={cardIndex}
+            resourceId={resourceId}
+            collectionId={activeCollectionId}
+            fromDetailsPanel={fromDetailsPanel}
           />
-        )}
-        renderContent={renderContent}
-      />
-    </View>
-  );
-};
+        ),
+      )}
+    />
+  </View>
+);
 
 SubTypeAccordion.propTypes = {
   headerCount: number.isRequired,
