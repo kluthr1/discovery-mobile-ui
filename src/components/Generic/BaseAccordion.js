@@ -20,6 +20,51 @@ import FocusedIcon from '../Icons/FocusedIcon';
 import MarkedIcon from '../Icons/MarkedIcon';
 import CollectionIcon from '../Icons/CollectionIcon';
 
+const AccordionHeader = ({
+  item, expanded, fromDetailsPanel, headerLabel, resourceIds, headerCount, activeCollectionId,
+}) => {
+  const chevronIcon = expanded
+    ? <Ionicons name="chevron-up" size={16} color={Colors.accordionChevronIcon} />
+    : <Ionicons name="chevron-down" size={16} color={Colors.accordionChevronIcon} />;
+
+  console.info('AccordionHeader: ', item, expanded, headerLabel);
+
+  return (
+    <View style={styles.header}>
+      <View style={styles.headerTextContainer}>
+        {chevronIcon}
+        <CountIcon count={headerCount} />
+        <BaseText style={styles.headerText}>
+          {headerLabel}
+        </BaseText>
+      </View>
+      <View style={styles.rightIconsContainer}>
+        { !fromDetailsPanel
+        && (
+          <>
+            <FocusedIcon
+              subType={headerLabel}
+              resourceIds={resourceIds}
+              isAccordion
+            />
+            <MarkedIcon
+              subType={headerLabel}
+              resourceIds={resourceIds}
+              subTypeCount={headerCount}
+              isAccordion
+            />
+          </>
+        )}
+        <CollectionIcon
+          collectionId={activeCollectionId}
+          resourceIds={resourceIds}
+          showCount
+        />
+      </View>
+    </View>
+  );
+};
+
 const SubTypeAccordion = ({
   headerCount,
   resourceIds,
@@ -28,47 +73,6 @@ const SubTypeAccordion = ({
   fromDetailsPanel,
 }) => {
   const dataArray = [{ title: headerLabel, content: resourceIds }];
-
-  const renderHeader = (item, expanded) => {
-    const chevronIcon = expanded
-      ? <Ionicons name="chevron-up" size={16} color={Colors.accordionChevronIcon} />
-      : <Ionicons name="chevron-down" size={16} color={Colors.accordionChevronIcon} />;
-
-    return (
-      <View style={styles.header}>
-        <View style={styles.headerTextContainer}>
-          {chevronIcon}
-          <CountIcon count={headerCount} />
-          <BaseText style={styles.headerText}>
-            {item.title}
-          </BaseText>
-        </View>
-        <View style={styles.rightIconsContainer}>
-          { !fromDetailsPanel
-            && (
-            <>
-              <FocusedIcon
-                subType={headerLabel}
-                resourceIds={resourceIds}
-                isAccordion
-              />
-              <MarkedIcon
-                subType={headerLabel}
-                resourceIds={resourceIds}
-                subTypeCount={headerCount}
-                isAccordion
-              />
-            </>
-            )}
-          <CollectionIcon
-            collectionId={activeCollectionId}
-            resourceIds={resourceIds}
-            showCount
-          />
-        </View>
-      </View>
-    );
-  };
 
   const renderContent = (item) => item.content.map(
     (resourceId, cardIndex) => (
@@ -88,7 +92,9 @@ const SubTypeAccordion = ({
         style={styles.accordion}
         dataArray={dataArray}
         expanded={[]}
-        renderHeader={renderHeader}
+        renderHeader={(item, expanded) => AccordionHeader({
+          item, expanded, fromDetailsPanel, headerLabel, resourceIds, headerCount, activeCollectionId,
+        })}
         renderContent={renderContent}
       />
     </View>
