@@ -20,14 +20,16 @@ import FocusedIcon from '../Icons/FocusedIcon';
 import MarkedIcon from '../Icons/MarkedIcon';
 import CollectionIcon from '../Icons/CollectionIcon';
 
-const AccordionHeader = ({ item, expanded }) => {
+const AccordionHeader = ({ data, expanded }) => {
   const chevronIcon = expanded
     ? <Ionicons name="chevron-up" size={16} color={Colors.accordionChevronIcon} />
     : <Ionicons name="chevron-down" size={16} color={Colors.accordionChevronIcon} />;
 
-  console.info('AccordionHeader: ', item, expanded);
+  console.info('AccordionHeader: ', data, expanded);
 
-  const { fromDetailsPanel, headerCount, activeCollectionId } = item;
+  const {
+    title, content, fromDetailsPanel, headerCount, activeCollectionId,
+  } = data;
 
   return (
     <View style={styles.header}>
@@ -35,7 +37,7 @@ const AccordionHeader = ({ item, expanded }) => {
         {chevronIcon}
         <CountIcon count={headerCount} />
         <BaseText style={styles.headerText}>
-          {item.title}
+          {title}
         </BaseText>
       </View>
       <View style={styles.rightIconsContainer}>
@@ -43,13 +45,13 @@ const AccordionHeader = ({ item, expanded }) => {
         && (
           <>
             <FocusedIcon
-              subType={item.title}
-              resourceIds={item.content}
+              subType={title}
+              resourceIds={content}
               isAccordion
             />
             <MarkedIcon
-              subType={item.title}
-              resourceIds={item.content}
+              subType={title}
+              resourceIds={content}
               subTypeCount={headerCount}
               isAccordion
             />
@@ -57,7 +59,7 @@ const AccordionHeader = ({ item, expanded }) => {
         )}
         <CollectionIcon
           collectionId={activeCollectionId}
-          resourceIds={item.content}
+          resourceIds={content}
           showCount
         />
       </View>
@@ -96,9 +98,12 @@ const SubTypeAccordion = ({
           activeCollectionId,
         }]}
         expanded={[]}
-        renderHeader={(item, expanded) => AccordionHeader({
-          item, expanded,
-        })}
+        renderHeader={(data, expanded) => (
+          <AccordionHeader
+            expanded={expanded}
+            data={data}
+          />
+        )}
         renderContent={renderContent}
       />
     </View>
