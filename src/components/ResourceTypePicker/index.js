@@ -37,7 +37,7 @@ CategoryButton.defaultProps = {
 };
 
 const ResourceTypePicker = ({
-  resourceTypeFilters,
+  allTypeFilters,
   selectResourceTypeAction,
   selectedResourceType,
 }) => (
@@ -49,24 +49,24 @@ const ResourceTypePicker = ({
       contentContainerStyle={styles.contentContainerStyle}
     >
       {
-          resourceTypeFilters
-            .filter(({ typeIsEnabled }) => typeIsEnabled === true)
-            .map(({ type, label }) => (
-              <CategoryButton
-                key={type}
-                resourceType={type}
-                label={label}
-                isActive={selectedResourceType === type}
-                selectResourceTypeAction={selectResourceTypeAction}
-              />
-            ))
-        }
+        allTypeFilters
+          .filter(({ typeIsEnabled, hasItemsInDateRange }) => typeIsEnabled && hasItemsInDateRange)
+          .map(({ type, label }) => (
+            <CategoryButton
+              key={type}
+              resourceType={type}
+              label={label}
+              isActive={selectedResourceType === type}
+              selectResourceTypeAction={selectResourceTypeAction}
+            />
+          ))
+      }
     </ScrollView>
   </View>
 );
 
 ResourceTypePicker.propTypes = {
-  resourceTypeFilters: arrayOf(shape({
+  allTypeFilters: arrayOf(shape({
     type: string.isRequired,
     typeIsEnabled: bool.isRequired,
     label: string.isRequired,
@@ -80,7 +80,7 @@ ResourceTypePicker.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
-  resourceTypeFilters: orderedResourceTypeFiltersSelector(state),
+  allTypeFilters: orderedResourceTypeFiltersSelector(state),
   selectedResourceType: activeCollectionResourceTypeSelector(state),
 });
 
