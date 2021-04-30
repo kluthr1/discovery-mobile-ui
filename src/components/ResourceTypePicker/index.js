@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View,
+  StyleSheet, View, Text,
 } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import {
@@ -14,12 +14,14 @@ import { orderedResourceTypeFiltersSelector, activeCollectionResourceTypeSelecto
 import BaseText from '../Generic/BaseText';
 
 const CategoryButton = ({
-  resourceType, label, isActive, selectResourceTypeAction,
+  resourceType, label, isActive, selectResourceTypeAction, hasCollectionItems, hasHighlightedItems,
 }) => (
   <TouchableOpacity
     style={[styles.button, isActive ? styles.selected : null]}
     onPress={() => selectResourceTypeAction(resourceType)}
   >
+    {hasCollectionItems && <Text style={textStyles.hasCollection}>⬤</Text>}
+    {hasHighlightedItems && <Text style={textStyles.hasHighlighted}>⬤</Text>}
     <BaseText style={[textStyles.button, isActive ? textStyles.selected : null]}>{label}</BaseText>
   </TouchableOpacity>
 );
@@ -29,6 +31,8 @@ CategoryButton.propTypes = {
   label: string.isRequired,
   isActive: bool.isRequired,
   selectResourceTypeAction: func.isRequired,
+  hasCollectionItems: bool.isRequired,
+  hasHighlightedItems: bool.isRequired,
 };
 
 CategoryButton.defaultProps = {
@@ -49,12 +53,16 @@ const ResourceTypePicker = ({
       {
         allTypeFilters
           .filter(({ typeIsEnabled, hasItemsInDateRange }) => typeIsEnabled && hasItemsInDateRange)
-          .map(({ type, label }) => (
+          .map(({
+            type, label, hasCollectionItems, hasHighlightedItems,
+          }) => (
             <CategoryButton
               key={type}
               resourceType={type}
               label={label}
               isActive={selectedResourceType === type}
+              hasCollectionItems={hasCollectionItems}
+              hasHighlightedItems={hasHighlightedItems}
               selectResourceTypeAction={selectResourceTypeAction}
             />
           ))
@@ -96,12 +104,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   button: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: 'white',
     borderColor: 'white',
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    marginHorizontal: 5,
-    borderRadius: 20,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    marginHorizontal: 4,
+    borderRadius: 16,
     borderWidth: 2,
   },
   selected: {
@@ -120,5 +130,15 @@ const textStyles = StyleSheet.create({
   },
   selected: {
     fontWeight: '700',
+  },
+  hasCollection: {
+    fontSize: 12,
+    paddingRight: 4,
+    color: Colors.collectionIcon,
+  },
+  hasHighlighted: {
+    fontSize: 12,
+    paddingRight: 4,
+    color: Colors.hasFocused,
   },
 });
