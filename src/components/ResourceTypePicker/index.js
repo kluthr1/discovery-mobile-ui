@@ -15,16 +15,14 @@ import BaseText from '../Generic/BaseText';
 
 const CategoryButton = ({
   resourceType, label, isActive, selectResourceTypeAction,
-}) => {
-  const buttonStyle = isActive ? styles.buttonSelected : styles.button;
-  const buttonTextStyle = isActive ? styles.buttonSelectedText : styles.buttonText;
-
-  return (
-    <TouchableOpacity style={buttonStyle} onPress={() => selectResourceTypeAction(resourceType)}>
-      <BaseText style={buttonTextStyle}>{label}</BaseText>
-    </TouchableOpacity>
-  );
-};
+}) => (
+  <TouchableOpacity
+    style={[styles.button, isActive ? styles.selected : null]}
+    onPress={() => selectResourceTypeAction(resourceType)}
+  >
+    <BaseText style={[textStyles.button, isActive ? textStyles.selected : null]}>{label}</BaseText>
+  </TouchableOpacity>
+);
 
 CategoryButton.propTypes = {
   resourceType: string.isRequired,
@@ -98,33 +96,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   button: {
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    marginHorizontal: 5,
     backgroundColor: 'white',
-    borderRadius: 20,
     borderColor: 'white',
-    borderWidth: 2,
-  },
-  buttonSelected: {
-    backgroundColor: 'white',
     paddingVertical: 5,
     paddingHorizontal: 15,
     marginHorizontal: 5,
     borderRadius: 20,
-    borderColor: Colors.darkgrey,
     borderWidth: 2,
   },
-  buttonSelectedText: {
-    color: 'black',
-    fontWeight: '700',
-  },
-  buttonText: {
-    color: 'black',
+  selected: {
+    borderColor: Colors.darkgrey,
   },
   contentContainerStyle: {
     flexDirection: 'row',
     height: 45,
     alignItems: 'center',
+  },
+});
+
+const textStyles = StyleSheet.create({
+  button: {
+    color: 'black',
+  },
+  selected: {
+    fontWeight: '700',
   },
 });
