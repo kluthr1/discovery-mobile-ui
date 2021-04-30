@@ -397,12 +397,14 @@ export const savedRecordsByRecordDateSelector = createSelector(
 );
 
 export const orderedResourceTypeFiltersSelector = createSelector(
-  [activeCollectionResourceTypeFiltersSelector],
-  (activeCollectionTypeFilters) => Object.entries(activeCollectionTypeFilters)
+  [activeCollectionResourceTypeFiltersSelector, allRecordsWithFilterResponseSelector],
+  (activeCollectionTypeFilters, items) => Object.entries(activeCollectionTypeFilters)
     .map(([type, typeIsEnabled]) => ({
       type,
       typeIsEnabled,
       label: PLURAL_RESOURCE_TYPES[type],
+      // eslint-disable-next-line max-len
+      hasItemsInDateRange: !!items.find(({ type: t, passesFilters: { date } }) => type === t && date),
     }))
     .sort(({ label: l1 }, { label: l2 }) => ((l1.toLowerCase() < l2.toLowerCase()) ? -1 : 1)),
 );
