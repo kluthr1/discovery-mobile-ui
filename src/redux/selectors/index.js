@@ -404,7 +404,10 @@ export const orderedResourceTypeFiltersSelector = createSelector(
       typeIsEnabled,
       label: PLURAL_RESOURCE_TYPES[type],
       // eslint-disable-next-line max-len
-      hasItemsInDateRange: !!items.find(({ type: t, passesFilters: { date } }) => type === t && date),
+      hasItemsInDateRange: !!items.find(({
+        type: t,
+        passesFilters: { date, showCollectionOnly, showHighlightedOnly },
+      }) => type === t && date && showCollectionOnly && showHighlightedOnly),
     }))
     .sort(({ label: l1 }, { label: l2 }) => ((l1.toLowerCase() < l2.toLowerCase()) ? -1 : 1)),
 );
