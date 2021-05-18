@@ -13,9 +13,9 @@ export default function StateProvider({ children }) {
   const authentication = useRecoilValue(authenticationState);
   console.info('StateProvider >>>> authentication: ', JSON.stringify(authentication, null, 2));
 
-  // if (!store) {
-  store = createStore(authentication);
-  // }
+  if (!store) {
+    store = createStore(authentication);
+  }
 
   return (
     <Provider store={store}>
