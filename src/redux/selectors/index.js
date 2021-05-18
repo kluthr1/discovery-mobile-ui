@@ -48,7 +48,13 @@ export const activeCollectionResourceTypeFiltersSelector = createSelector(
 
 export const activeCollectionDateRangeFilterSelector = createSelector(
   [activeCollectionSelector],
-  (activeCollection) => activeCollection.dateRangeFilter,
+  (activeCollection) => {
+    const { dateRangeStart, dateRangeEnd } = activeCollection.dateRangeFilter;
+    return ({
+      dateRangeStart: dateRangeStart ? new Date(dateRangeStart) : undefined,
+      dateRangeEnd: dateRangeEnd ? new Date(dateRangeEnd) : undefined,
+    });
+  },
 );
 
 export const activeCollectionMarkedResourcesSelector = createSelector(
