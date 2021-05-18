@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import {
   StyleSheet, SafeAreaView, StatusBar, BackHandler, Button,
 } from 'react-native';
+import { useResetRecoilState } from 'recoil';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -13,13 +14,17 @@ import { actionTypes } from '../redux/action-types';
 import UserInfo from '../components/Profile/UserInfo';
 import Demographics from '../components/Profile/Demographics';
 import Data from '../components/Profile/Data';
+import { authenticationState } from '../recoil';
 
 const ProfileScreen = ({
   clearAuthAction, clearPatientDataAction,
 }) => {
+  const resetAuthentication = useResetRecoilState(authenticationState);
+
   const clearData = () => {
     clearAuthAction();
     clearPatientDataAction();
+    resetAuthentication();
   };
 
   useFocusEffect(

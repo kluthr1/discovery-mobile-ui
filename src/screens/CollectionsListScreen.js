@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useResetRecoilState } from 'recoil';
 import {
   StyleSheet, View, SafeAreaView, StatusBar, TouchableOpacity, BackHandler,
 } from 'react-native';
@@ -16,6 +17,7 @@ import Colors from '../constants/Colors';
 import CollectionRow from '../components/CollectionRow/CollectionRow';
 import { actionTypes } from '../redux/action-types';
 import CollectionsDialog, { COLLECTIONS_DIALOG_ACTIONS, CollectionsDialogText } from '../components/Dialog/CollectionsDialog';
+import { authenticationState } from '../recoil';
 
 const CollectionsListScreen = ({
   navigation,
@@ -24,6 +26,7 @@ const CollectionsListScreen = ({
   clearPatientDataAction,
 }) => {
   const [collectionsDialogText, setCollectionsDialogText] = useState(null);
+  const resetAuthentication = useResetRecoilState(authenticationState);
 
   const handleNewCollectionPress = () => {
     setCollectionsDialogText(CollectionsDialogText[COLLECTIONS_DIALOG_ACTIONS.CREATE]);
@@ -32,6 +35,7 @@ const CollectionsListScreen = ({
   const clearData = () => {
     clearAuthAction();
     clearPatientDataAction();
+    resetAuthentication();
   };
 
   const handleLogout = () => {
