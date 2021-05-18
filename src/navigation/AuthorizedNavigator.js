@@ -9,6 +9,7 @@ import CatalogScreen from '../screens/CatalogScreen';
 import CollectionsListScreen from '../screens/CollectionsListScreen';
 import NotesScreen from '../screens/NotesScreen';
 import Colors from '../constants/Colors';
+import StateProvider from '../../StateProvider';
 
 const HomeTab = createBottomTabNavigator();
 const CollectionsStack = createStackNavigator();
@@ -58,23 +59,25 @@ const CollectionStackScreen = () => (
 );
 
 const AuthorizedNavigator = () => (
-  <HomeTab.Navigator
-    initialRouteName="Collections"
-    screenOptions={selectScreenOptions}
-    tabBarOptions={{
-      activeTintColor: Colors.primary,
-      inactiveTintColor: 'gray',
-      style: {
-        paddingVertical: 10,
-        height: 84,
-      },
-      labelStyle: { fontSize: 12 },
-    }}
-  >
-    <HomeTab.Screen name="Profile" component={ProfileScreen} />
-    <HomeTab.Screen name="Summary" component={SummaryScreen} />
-    <HomeTab.Screen name="Collections" component={CollectionStackScreen} />
-  </HomeTab.Navigator>
+  <StateProvider>
+    <HomeTab.Navigator
+      initialRouteName="Collections"
+      screenOptions={selectScreenOptions}
+      tabBarOptions={{
+        activeTintColor: Colors.primary,
+        inactiveTintColor: 'gray',
+        style: {
+          paddingVertical: 10,
+          height: 84,
+        },
+        labelStyle: { fontSize: 12 },
+      }}
+    >
+      <HomeTab.Screen name="Profile" component={ProfileScreen} />
+      <HomeTab.Screen name="Summary" component={SummaryScreen} />
+      <HomeTab.Screen name="Collections" component={CollectionStackScreen} />
+    </HomeTab.Navigator>
+  </StateProvider>
 );
 
 export default AuthorizedNavigator;
