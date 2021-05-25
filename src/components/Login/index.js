@@ -1,47 +1,39 @@
-import React, { useState } from 'react';
-import { useSetRecoilState } from 'recoil';
+import React, { useState, useEffect } from 'react';
 import {
-  Alert,
   StyleSheet,
-  Text,
   View,
-  TouchableOpacity,
 } from 'react-native';
+import FhirKitClient from 'fhir-kit-client';
+import Constants from 'expo-constants'; // eslint-disable-line import/no-extraneous-dependencies
 
-import { authenticationState } from '../../recoil';
 import Colors from '../../constants/Colors';
-import {
-  authAsync, buildFhirIssUrl,
-} from '../../resources/fhirAuth';
-
-import PatientPicker, { DEFAULT_PATIENT_ID } from './PatientPicker';
-import SkipLoginButton from './SkipLoginButton';
 import LoadingIndicator from '../LoadingIndicator';
 
-const Login = () => {
-  const setAuthentication = useSetRecoilState(authenticationState);
-  const [loading, setLoading] = useState(false);
-  const [mockPatientId, setPatientId] = useState(DEFAULT_PATIENT_ID);
-  const fhirIss = buildFhirIssUrl(mockPatientId);
+import PatientPicker, { DEFAULT_PATIENT_ID } from './PatientPicker';
+import LoginButton from './LoginButton';
+import SkipLoginButton from './SkipLoginButton';
 
-  const handleLogin = async () => {
-    setLoading(true);
-    try {
-      const authResponse = await authAsync(fhirIss);
-      if (authResponse) {
-        setLoading(false);
-        setAuthentication({
-          baseUrl: fhirIss,
-          authResult: authResponse,
-        });
-      }
-    } catch (error) {
-      console.error('AppAuth Error:', error); // eslint-disable-line no-console
-      Alert.alert('Login Error', 'Must login to use Discovery', ['ok']);
-      // enable patient-picker and login buttons to render:
-      setLoading(false);
-    }
-  };
+// https://open.epic.com/MyApps/Endpoints
+const { BASE_URL } = Constants.manifest.extra;
+
+const Login = () => {
+  const [loading, setLoading] = useState(false);
+  const [authorizeUrl, setAuthorizeUrl] = useState(false);
+  const [tokenUrl, setTokenUrl] = useState(false);
+  const [mockPatientId, setPatientId] = useState(DEFAULT_PATIENT_ID);
+
+  useEffect(() => {
+    const fhirClient = new FhirKitClient({ baseUrl: BASE_URL });
+    fhirClient.smartAuthMetadata().then((fkcResult) => {
+      const { authorizeUrl: auth, tokenUrl: tok } = fkcResult;
+      setAuthorizeUrl(auth);
+      setTokenUrl(tok);
+    });
+  }, []);
+
+  if (!authorizeUrl || !tokenUrl) {
+    return <LoadingIndicator />;
+  }
 
   return (
     <View style={styles.body}>
@@ -54,12 +46,12 @@ const Login = () => {
             setPatientId={setPatientId}
           />
           <SkipLoginButton />
-          <TouchableOpacity
-            style={styles.login}
-            onPress={handleLogin}
-          >
-            <Text style={styles.loginText}>Login</Text>
-          </TouchableOpacity>
+          <LoginButton
+            setLoading={setLoading}
+            baseUrl={BASE_URL}
+            authorizeUrl={authorizeUrl.toString()}
+            tokenUrl={tokenUrl.toString()}
+          />
         </>
       )}
     </View>
