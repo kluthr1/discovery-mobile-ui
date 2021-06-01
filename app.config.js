@@ -1,9 +1,17 @@
+import 'dotenv/config';
+
 export default {
   expo: {
     name: 'discovery-mobile-ui',
     slug: 'discovery-mobile-ui',
     owner: 'sync-for-science',
     version: '1.0.0',
+    scheme: 'https',
+    extra: {
+      BASE_URL: process.env.BASE_URL,
+      CLIENT_ID: process.env.CLIENT_ID,
+      REDIRECT_URI: process.env.REDIRECT_URI,
+    },
     orientation: 'portrait',
     icon: './assets/icon.png',
     splash: {
