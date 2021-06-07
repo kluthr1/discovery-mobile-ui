@@ -9,9 +9,9 @@ import Constants from 'expo-constants'; // eslint-disable-line import/no-extrane
 import Colors from '../../constants/Colors';
 import LoadingIndicator from '../LoadingIndicator';
 
-import PatientPicker, { DEFAULT_PATIENT_ID } from './PatientPicker';
+// import PatientPicker, { DEFAULT_PATIENT_ID } from './PatientPicker';
 import LoginButton from './LoginButton';
-import SkipLoginButton from './SkipLoginButton';
+// import SkipLoginButton from './SkipLoginButton';
 
 // https://open.epic.com/MyApps/Endpoints
 const { BASE_URL } = Constants.manifest.extra;
@@ -20,7 +20,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [authorizeUrl, setAuthorizeUrl] = useState(false);
   const [tokenUrl, setTokenUrl] = useState(false);
-  const [mockPatientId, setPatientId] = useState(DEFAULT_PATIENT_ID);
 
   useEffect(() => {
     setLoading(true);
@@ -42,12 +41,6 @@ const Login = () => {
       { loading && (<LoadingIndicator />)}
       { !loading && (
         <>
-          <PatientPicker
-            loading={loading}
-            patientId={mockPatientId}
-            setPatientId={setPatientId}
-          />
-          <SkipLoginButton />
           <LoginButton
             setLoading={setLoading}
             baseUrl={BASE_URL}
