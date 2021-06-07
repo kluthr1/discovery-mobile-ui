@@ -41,6 +41,10 @@ export default class FhirClient {
     this.decodedIdToken = decodeIdToken(idToken);
     this.patientId = this.decodedIdToken[1].sub;
 
+    console.info('baseUrl: ', baseUrl);
+    console.info('accessToken: ', accessToken);
+    console.info('patientId: ', this.patientId);
+
     this.client = new Client({
       baseUrl,
       customHeaders: {
