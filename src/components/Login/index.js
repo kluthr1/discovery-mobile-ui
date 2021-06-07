@@ -23,8 +23,10 @@ const Login = () => {
   const [mockPatientId, setPatientId] = useState(DEFAULT_PATIENT_ID);
 
   useEffect(() => {
+    setLoading(true);
     const fhirClient = new FhirKitClient({ baseUrl: BASE_URL });
     fhirClient.smartAuthMetadata().then((fkcResult) => {
+      setLoading(false);
       const { authorizeUrl: auth, tokenUrl: tok } = fkcResult;
       setAuthorizeUrl(auth);
       setTokenUrl(tok);
