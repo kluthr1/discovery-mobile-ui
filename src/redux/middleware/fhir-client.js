@@ -1,21 +1,9 @@
 import Client from 'fhir-kit-client';
 // import { Alert } from 'react-native';
 
-const { Buffer } = require('buffer');
+import epicParams from '../../../config/epic-params';
 
-const RESOURCE_TYPES = [
-  // 'Patient',
-  // 'ExplanationOfBenefit',
-  // 'Claim',
-  // 'Condition', // "A required element is missing."
-  'Encounter',
-  'Immunization',
-  'MedicationRequest',
-  // 'CarePlan',
-  'DiagnosticReport',
-  'Procedure',
-  // 'Observation',
-];
+const { Buffer } = require('buffer');
 
 // JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants
 //     https://datatracker.ietf.org/doc/html/rfc7523
@@ -57,12 +45,17 @@ export default class FhirClient {
     const { patientId } = this;
     const requests = [() => this.client.request(`Patient/${patientId}`)];
 
-    return requests.concat(RESOURCE_TYPES.map((resourceType) => () => (this.client.search({
-      resourceType,
-      searchParams: {
-        patient: patientId,
-      },
-    }))));
+    epicParams.forEach(({ type, params }) => {
+      requests.push(() => this.client.search({
+        resourceType: type,
+        searchParams: {
+          ...params,
+          patient: patientId,
+        },
+      }));
+    });
+
+    return requests;
   }
 
   async request(url) {
