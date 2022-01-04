@@ -89,11 +89,15 @@ const mapStateToProps = (state) => ({
 
 });
 
+
 const mapDispatchToProps = {
   isAddingNewCollectionAction: isAddingNewCollection,
 };
 
+
 export default connect(mapStateToProps, mapDispatchToProps, null)(CollectionsIndexHeader);
+
+
 const styles = StyleSheet.create({
   header: {
     backgroundColor: Colors.headerBackground,

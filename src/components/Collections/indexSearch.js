@@ -480,7 +480,6 @@ CollectionsIndexSearch.propTypes = {
   collections: shape({}).isRequired,
 };
 
-export default CollectionsIndexSearch;
 
 const styles = StyleSheet.create({
   safeAreaView: {
@@ -672,3 +671,5 @@ const styles = StyleSheet.create({
   },
 
 });
+
+export default CollectionsIndexSearch;
