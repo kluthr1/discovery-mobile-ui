@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 
 import Colors from '../../constants/Colors';
 import { selectResourceType } from '../../redux/action-creators';
-import { orderedResourceTypeFiltersSelector, activeCollectionResourceTypeSelector } from '../../redux/selectors';
+import { orderedResourceTypeFiltersSelector, activeCollectionResourceTypeSelector, allValidRecordsSortedByDateSelector } from '../../redux/selectors';
 
 const CategoryButton = ({
   resourceType, label, isActive, selectResourceTypeAction, hasCollectionItems, hasHighlightedItems,
@@ -37,18 +37,15 @@ CategoryButton.propTypes = {
 
 CategoryButton.defaultProps = {
 };
-
-const ResourceTypePicker = ({
+const ResourceSearch = ({
   allTypeFilters,
   selectResourceTypeAction,
   selectedResourceType,
 }) => {
+  console.log(allRecords)
 
-
-
-  return(
-    <View>
-
+  return (
+  <View>
     <ScrollView
       style={styles.root}
       horizontal
@@ -72,16 +69,12 @@ const ResourceTypePicker = ({
             />
           ))
       }
-
     </ScrollView>
   </View>
 );
-
 }
 
-
-
-ResourceTypePicker.propTypes = {
+ResourceSearch.propTypes = {
   allTypeFilters: arrayOf(shape({
     type: string.isRequired,
     typeIsEnabled: bool.isRequired,
@@ -89,16 +82,17 @@ ResourceTypePicker.propTypes = {
   })).isRequired,
   selectedResourceType: string,
   selectResourceTypeAction: func.isRequired,
-
+  allRecords: arrayOf(shape({})).isRequired,
 };
 
-ResourceTypePicker.defaultProps = {
+ResourceSearch.defaultProps = {
   selectedResourceType: null,
 };
 
 const mapStateToProps = (state) => ({
   allTypeFilters: orderedResourceTypeFiltersSelector(state),
   selectedResourceType: activeCollectionResourceTypeSelector(state),
+  allRecords: allValidRecordsSortedByDateSelector(state),
 
 });
 
@@ -106,7 +100,7 @@ const mapDispatchToProps = {
   selectResourceTypeAction: selectResourceType,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ResourceTypePicker);
+export default connect(mapStateToProps, mapDispatchToProps)(ResourceSearch);
 
 const styles = StyleSheet.create({
   root: {
@@ -115,7 +109,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 5,
   },
-
   button: {
     flexDirection: 'row',
     alignItems: 'center',

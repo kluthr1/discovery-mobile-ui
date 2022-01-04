@@ -79,6 +79,7 @@ const TimelineChart = ({ timelineIntervals }) => {
     intervals, intervalLength,
     minDate, maxDate,
   } = timelineIntervals;
+  console.log(timelineIntervals)
   const screenWidth = Dimensions.get('window').width;
   const availableWidth = screenWidth - (4 * config.CHART_MARGIN);
   // TODO: a full, multi-line description of applied filters?
