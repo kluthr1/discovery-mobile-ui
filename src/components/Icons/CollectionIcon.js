@@ -23,8 +23,9 @@ const CollectionIcon = ({
 }) => {
   const resourceCount = resourceIds.reduce((acc, id) => {
     const inCollection = collectionResourceIds[id];
-    return inCollection ? acc + 1 : acc;
+    return (inCollection) ? acc + 1 : acc;
   }, 0);
+
   const iconCount = (showCount && resourceCount) ? resourceCount : null;
 
   const handlePress = () => (resourceCount === resourceIds.length

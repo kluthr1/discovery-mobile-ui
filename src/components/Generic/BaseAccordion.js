@@ -34,7 +34,6 @@ const AccordionHeader = ({
   const chevronIcon = expanded
     ? <Ionicons name="chevron-up" size={16} color={Colors.accordionChevronIcon} />
     : <Ionicons name="chevron-down" size={16} color={Colors.accordionChevronIcon} />;
-
   return (
     <View style={[
       styles.header,

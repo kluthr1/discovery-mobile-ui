@@ -76,6 +76,35 @@ export const activeCollectionDateRangeFilterSelector = createSelector(
   },
 );
 
+export const activeSearchFilterSelector = createSelector(
+  [activeCollectionSelector],
+  (activeCollection) => {
+    return ({
+      searchTerms: [activeCollection.searchFilter],
+      includeAll: true
+    });
+  },
+);
+
+function validSearchFilter(subType, filter){
+  if(filter["includeAll"]){
+    for(var x in filter["searchTerms"]){
+      if(filter["searchTerms"][x] != undefined && !subType.toLowerCase().includes(filter["searchTerms"][x].toLowerCase())){
+        return false;
+      }
+    }
+    return true;
+  }else{
+    for(var x in filter["searchTerms"]){
+      if(filter["searchTerms"][x] != undefined && subType.toLowerCase().includes(filter["searchTerms"][x].toLowerCase())){
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+
 export const activeCollectionMarkedResourcesSelector = createSelector(
   [activeCollectionSelector],
   (activeCollection) => Object.entries(activeCollection.records)
@@ -281,8 +310,9 @@ const allRecordsWithFilterResponseSelector = createSelector(
     activeCollectionSelector,
     dateRangeForAllRecordsSelector,
     activeCollectionDateRangeFilterSelector,
+    activeSearchFilterSelector,
   ],
-  (items, activeCollection, dateRangeForAllRecords, activeCollectionDateRangeFilter) => {
+  (items, activeCollection, dateRangeForAllRecords, activeCollectionDateRangeFilter, activeSearchFilter) => {
     const { minimumDate, maximumDate } = dateRangeForAllRecords;
     const {
       resourceTypeFilters,
@@ -293,7 +323,6 @@ const allRecordsWithFilterResponseSelector = createSelector(
 
     // eslint-disable-next-line max-len
     const { dateRangeStart = minimumDate, dateRangeEnd = maximumDate } = activeCollectionDateRangeFilter;
-
     return items.map(({
       id, type, subType, timelineDate,
     }) => ({
@@ -310,6 +339,7 @@ const allRecordsWithFilterResponseSelector = createSelector(
             end: dateRangeEnd,
           },
         ),
+        subTypeString: validSearchFilter(subType, activeSearchFilter),
         inCollection: records[id]?.saved,
         dateSaved: records[id]?.dateSaved,
         showCollectionOnly: !showCollectionOnly || (showCollectionOnly && records[id]?.saved),
@@ -358,8 +388,10 @@ const recordsFilteredByAllButDateSelector = createSelector(
       type,
       showCollectionOnly,
       showHighlightedOnly,
+      subTypeString
+
     },
-  }) => type && showCollectionOnly && showHighlightedOnly),
+  }) => type && showCollectionOnly && showHighlightedOnly && subTypeString),
 );
 
 // This returns an Array of picked fields and 'passesFilters' map, not underlying records:
@@ -548,16 +580,16 @@ export const orderedResourceTypeFiltersSelector = createSelector(
       label: PLURAL_RESOURCE_TYPES[type],
       hasCollectionItems: !!items.find(({
         type: t,
-        passesFilters: { date, showHighlightedOnly, inCollection },
-      }) => type === t && date && showHighlightedOnly && inCollection),
+        passesFilters: { date, showHighlightedOnly, inCollection, subTypeString },
+      }) => type === t && date && showHighlightedOnly && subTypeString  ),
       hasHighlightedItems: !!items.find(({
         type: t,
-        passesFilters: { date, showCollectionOnly, isHighlighted },
-      }) => type === t && date && showCollectionOnly && isHighlighted),
+        passesFilters: { date, showCollectionOnly, isHighlighted, subTypeString },
+      }) => type === t && date && showCollectionOnly && isHighlighted && subTypeString) ,
       hasItemsInDateRange: !!items.find(({
         type: t,
-        passesFilters: { date, showCollectionOnly, showHighlightedOnly },
-      }) => type === t && date && showCollectionOnly && showHighlightedOnly),
+        passesFilters: { date, showCollectionOnly, showHighlightedOnly, subTypeString },
+      }) => type === t && date && showCollectionOnly && showHighlightedOnly && subTypeString),
     }))
     .sort(({ label: l1 }, { label: l2 }) => ((l1.toLowerCase() < l2.toLowerCase()) ? -1 : 1)),
 );

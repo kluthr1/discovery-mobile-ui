@@ -346,6 +346,16 @@ export const collectionsReducer = (state = preloadCollections, action) => {
         }
       });
     }
+    case actionTypes.UPDATE_SEARCH_TERM: {
+      const { searchTerm } = action.payload;
+
+
+      return produce(state, (draft) => {
+
+        draft[collectionId].searchFilter = searchTerm;
+
+      });
+    }
     case actionTypes.UPDATE_MARKED_RESOURCES: {
       const { subType, resourceIdsMap } = action.payload;
 
