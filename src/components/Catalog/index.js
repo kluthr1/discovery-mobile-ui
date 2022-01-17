@@ -12,6 +12,7 @@ import {
 import { Entypo, Feather } from '@expo/vector-icons'; // eslint-disable-line import/no-extraneous-dependencies
 
 import Timeline from '../Timeline';
+import { AutocompleteDropdown } from '../AutoComplete'
 
 import ResourceTypePicker from '../ResourceTypePicker';
 import SubTypeAccordionsContainer from '../SubTypeAccordionsContainer';
@@ -73,8 +74,9 @@ const Catalog = ({
   const [selectedItem, setSelectedItem] = useState(null)
   const [autoFillRecords, setAutoFillRecords] = useState([])
   const [resourceIds, setResourceIds] = useState([])
-  const [searchRecordText, setSearchRecordText] = useState("")
+  const [searchRecordText, setSearchRecordText] = useState("B")
   const [selectedItem2, setSelectedItem2] = useState(null)
+  const [autoFillRecords2, setAutoFillRecords2] = useState([])
 
 
   useEffect(() => {
@@ -90,9 +92,8 @@ const Catalog = ({
         if(!string.toLowerCase().includes(words[j].toLowerCase())){
           to_add = false
         }
-
       }
-      if (string.toLowerCase().includes(searchRecordText.toLowerCase())){
+      if (to_add){
         newAutoFill.push(allRecords[i]["subType"])
         storeResourceIds.push(allRecords[i].id)
       }
@@ -105,9 +106,10 @@ const Catalog = ({
       newAutoFill.push({id: i, title: unique[i]})
 
     }
+
     setAutoFillRecords(newAutoFill)
     setResourceIds(storeResourceIds)
-
+    console.log(newAutoFill)
   }, [allRecords, searchRecordText]);
 
 
@@ -134,10 +136,22 @@ const Catalog = ({
     >
 
       <View style={styles.drawerContainer}>
+
         <FilterDrawer>
           <View style={styles.searchDropDownWrapper}>
             <CatalogScreenHeader collection={collection} navigation={navigation} />
-            <View  style = {styles.borderWrap}>
+          <View  style = {styles.borderWrap}>
+            <AutocompleteDropdown
+                clearOnFocus={false}
+                closeOnBlur={false}
+                closeOnSubmit={false}
+                initialValue={{ id: '1' }} // or just '2'
+
+                onSelectItem={setSelectedItem}
+                dataSet={autoFillRecords}
+              />
+            </View>
+          {/*  <View  style = {styles.borderWrap}>
 
               <View style={styles.searchInputContainer}>
               <View style={styles.iconPadding}>
@@ -159,7 +173,9 @@ const Catalog = ({
                 resourceIds={resourceIds}
               />
             </View>
+          */}
           </View>
+        <View style ={styles.negZIndex}>
           <Timeline noRecords={noRecords} />
           {noRecords && (
           <View style={styles.zeroStateContainer}>
@@ -176,6 +192,8 @@ const Catalog = ({
             </ScrollView>
           </>
           )}
+          </View>
+
         </FilterDrawer>
 
       </View>
@@ -255,6 +273,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 5,
     flexDirection: 'row',
+    zIndex:10,
+    elevation:10
   },
   iconPadding: {
     padding: 3,
@@ -281,5 +301,8 @@ const styles = StyleSheet.create({
   },
   searchDropDownWrapper:{
     position:'relative'
-  }
+  },
+  negZIndex:{
+      zIndex:-1
+    }
 });
