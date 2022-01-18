@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'column',
     borderColor: 'gray',
+    zIndex:-1,
   },
   dateRangeContainer: {
     flexDirection: 'row',

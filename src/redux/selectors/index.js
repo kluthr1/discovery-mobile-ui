@@ -87,21 +87,18 @@ export const activeSearchFilterSelector = createSelector(
 );
 
 function validSearchFilter(subType, filter){
-  if(filter["includeAll"]){
-    for(var x in filter["searchTerms"]){
-      if(filter["searchTerms"][x] != undefined && !subType.toLowerCase().includes(filter["searchTerms"][x].toLowerCase())){
-        return false;
+  for(var x in filter["searchTerms"]){
+    if(filter["searchTerms"][x] != undefined){
+      var words  = filter["searchTerms"][x].split(' ')
+      for(var j in words){
+        if(!subType.toLowerCase().includes(words[j].toLowerCase())){
+          return false;
+        }
       }
-    }
-    return true;
-  }else{
-    for(var x in filter["searchTerms"]){
-      if(filter["searchTerms"][x] != undefined && subType.toLowerCase().includes(filter["searchTerms"][x].toLowerCase())){
-        return true;
-      }
-    }
-    return false;
+   }
   }
+  return true;
+
 }
 
 

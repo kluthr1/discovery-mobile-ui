@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     flexDirection: 'row',
     paddingHorizontal: 5,
+    zIndex:-1
   },
   button: {
     flexDirection: 'row',
@@ -121,6 +122,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 45,
     alignItems: 'center',
+    zIndex:-1
+
   },
 });
 
@@ -140,5 +143,7 @@ const textStyles = StyleSheet.create({
     fontSize: 16,
     paddingRight: 4,
     color: Colors.collectionIcon,
+    zIndex:-1
+
   },
 });

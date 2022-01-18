@@ -24,6 +24,8 @@ import {
 import { updateSearchTerm } from '../../redux/action-creators';
 import CatalogModal from '../Modals/CatalogModal';
 import FilterDrawer from '../FilterDrawer';
+import { AutocompleteDropdown } from '../AutoComplete'
+
 import Colors from '../../constants/Colors';
 import HeaderCountIcon from '../Icons/HeaderCountIcon';
 import TextStyles from '../../constants/TextStyles';
@@ -90,12 +92,13 @@ const Catalog = ({
         if(!string.toLowerCase().includes(words[j].toLowerCase())){
           to_add = false
         }
-
       }
-      if (string.toLowerCase().includes(searchRecordText.toLowerCase())){
-        newAutoFill.push(allRecords[i]["subType"])
+      if(to_add){
         storeResourceIds.push(allRecords[i].id)
       }
+
+      newAutoFill.push(allRecords[i]["subType"])
+
       //subType.toLowerCase().includes(filter["searchTerms"][x].toLowerCase()
     }
     var unique = newAutoFill.filter((v, i, a) => a.indexOf(v) === i);
@@ -140,26 +143,39 @@ const Catalog = ({
             <View  style = {styles.borderWrap}>
 
               <View style={styles.searchInputContainer}>
-              <View style={styles.iconPadding}>
-                <Feather name="search" size={20} />
-              </View>
-                <TextInput
+
+
+              <AutocompleteDropdown
+                  clearOnFocus={false}
+                  closeOnBlur={false}
+                  closeOnSubmit={false}
+                  resetOnClose = {false}
+                  initialValue={{ id: '1' }} // or just '2'
+                  onChangeText={setSearchRecordText}
+                  dataSet={autoFillRecords}
+                />
+                {/*<TextInput
                   style = {styles.textInput}
                   onChangeText={setSearchRecordText}
                   placeholder={"search records"}
                   value={searchRecordText}
                   multiline={false}
                   autoFocus
-                />
+                />*/}
 
               </View>
+              <View style={styles.collectionIconWrapper}>
+
               <CollectionIcon
-                showCount={true}
+                showCount={false}
                 collectionId={collection['id']}
                 resourceIds={resourceIds}
               />
+              </View>
+
             </View>
           </View>
+
           <Timeline noRecords={noRecords} />
           {noRecords && (
           <View style={styles.zeroStateContainer}>
@@ -170,12 +186,17 @@ const Catalog = ({
           )}
           {!noRecords && (
           <>
+            <View style={styles.negZIndex}>
             <ResourceTypePicker />
+            </View>
             <ScrollView style={styles.scrollView}>
               <SubTypeAccordionsContainer data={selectedRecordsGroupedByType} />
             </ScrollView>
+
+
           </>
           )}
+
         </FilterDrawer>
 
       </View>
@@ -220,6 +241,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    zIndex: -1,
   },
   collectionLabel: {
     color: 'black',
@@ -238,6 +260,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     flexDirection: 'row',
     justifyContent: 'center',
+    zIndex:-1,
   },
   zeroStateText: {
     ...h5,
@@ -245,41 +268,35 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Colors.darkgrey,
   },
-  textInput: {
-    width:'100%',
-    height:'100%',
-    padding: 8,
-    zIndex:100,
-  },
+
   borderWrap:{
     alignItems: 'center',
-    marginVertical: 5,
     flexDirection: 'row',
+    zIndex:1,
+    width:'100%'
   },
   iconPadding: {
     padding: 3,
   },
   searchInputContainer: {
     height: 36,
-    width: '85%',
-    borderRadius: 10,
-    borderWidth: 0.5,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
+    width: '88%',
+    marginRight:0,
     flexDirection: 'row',
-    marginLeft: 5,
-    marginRight:3,
+    zIndex: 10,
+
 
   },
-  suggestedListStyles:{
-    position: 'absolute',
-    zIndex:10,
-    borderRadius: 10,
-    borderWidth: 0.5,
-    width: '85%',
-    marginLeft:5,
+  collectionIconWrapper:{
+    zIndex:1,
+    height: 36,
+    paddingLeft:15,
+    paddingTop: 8,
+    left:0,
+    width:'12%'
   },
-  searchDropDownWrapper:{
-    position:'relative'
-  }
+
+  negZIndex:{
+      zIndex:-1
+    }
 });
