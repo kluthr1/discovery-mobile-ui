@@ -34,6 +34,8 @@ export const AutocompleteDropdown = memo(
     const [isOpened, setIsOpened] = useState(false)
     const [searchText, setSearchText] =  useState('')
     const [dataSet, setDataSet] = useState(props.dataSet)
+    const [openSuggestions, setOpenSuggestions] = useState(false)
+
     const clearOnFocus = props.clearOnFocus === false ? false : true
     const inputHeight = 30
     const suggestionsListMaxHeight =200
@@ -290,6 +292,7 @@ export const AutocompleteDropdown = memo(
           props.onFocus(e)
         }
         open()
+        setOpenSuggestions(true)
       },
       [dataSet, clearOnFocus, props.onFocus]
     )
@@ -301,6 +304,7 @@ export const AutocompleteDropdown = memo(
       if (typeof props.onBlur === 'function') {
         props.onBlur(e)
       }
+      setOpenSuggestions(false)
     }, [props.closeOnBlur, props.onBlur])
 
     const onSubmit = useCallback(
@@ -345,7 +349,8 @@ export const AutocompleteDropdown = memo(
               onBlur={onBlur}
               onFocus={onFocus}
               onSubmitEditing={onSubmit}
-              placeholderTextColor="#d0d4dc"
+              placeholder="search records"
+              placeholderTextColor="#777777"
             />
           </View>
         <View
@@ -360,7 +365,7 @@ export const AutocompleteDropdown = memo(
             isOpened={isOpened}
             inputHeight={inputHeight}
             onChevronPress={onChevronPress}
-            showChevron={props.showChevron ?? true}
+            showChevron={false}
             showClear={props.showClear ?? false}
             loading={props.loading}
             buttonsContainerStyle={props.rightButtonsContainerStyle}
@@ -373,7 +378,7 @@ export const AutocompleteDropdown = memo(
 
 
 
-        { isOpened && Array.isArray(dataSet) && (
+        { searchText.length > 2 && openSuggestions && Array.isArray(dataSet) && (
           <View
             style={{
               ...styles.listContainer,

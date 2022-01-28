@@ -167,7 +167,7 @@ const Catalog = ({
               <View style={styles.collectionIconWrapper}>
 
               <CollectionIcon
-                showCount={false}
+                showCount={true}
                 collectionId={collection['id']}
                 resourceIds={resourceIds}
               />
@@ -180,7 +180,7 @@ const Catalog = ({
           {noRecords && (
           <View style={styles.zeroStateContainer}>
             <Text style={styles.zeroStateText}>
-              No Records available based on the filters or the time interval.
+              No Records available match.
             </Text>
           </View>
           )}
@@ -280,20 +280,24 @@ const styles = StyleSheet.create({
   },
   searchInputContainer: {
     height: 36,
-    width: '88%',
+    width: '83%',
     marginRight:0,
     flexDirection: 'row',
+
     zIndex: 10,
 
 
   },
   collectionIconWrapper:{
+    flexDirection: 'row',
+    alignItems: 'center',
+
     zIndex:1,
-    height: 36,
+    height: 40,
     paddingLeft:15,
     paddingTop: 8,
     left:0,
-    width:'12%'
+    width:'17%'
   },
 
   negZIndex:{

@@ -139,7 +139,7 @@ const CollectionsIndexSearch = ({
           </Text>
         </>,
       );
-      threeLineSearchText.push(
+      /*threeLineSearchText.push(
         <>
           <View style={styles.threeLineSummary}>
             <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
@@ -156,7 +156,7 @@ const CollectionsIndexSearch = ({
             </Text>
           </View>
         </>,
-      );
+      );*/
     }
 
     if (value.length > 0) {
@@ -259,14 +259,12 @@ const CollectionsIndexSearch = ({
 
     setThreeLineDiv(threeLineSearchText);
 
-    if ((value.length > 0
-      || title.length > 0 || current || urgent || notCurrent || notUrgent) && !showSearch) {
+    if ((value.length > 0 || current || urgent || notCurrent || notUrgent) && !showSearch) {
       setShowSearchText(true);
     } else {
       setShowSearchText(false);
     }
-    if (value.length > 0
-      || title.length > 0 || current || urgent || notCurrent || notUrgent) {
+    if (value.length > 0 || current || urgent || notCurrent || notUrgent) {
       setDisableReset(false);
     } else {
       setDisableReset(true);
@@ -304,8 +302,7 @@ const CollectionsIndexSearch = ({
 
       <View style={styles.root}>
         <View style={styles.dateRangeContainer}>
-
-          <Left>
+          <View style={styles.topRow}>
             {!disableReset
             && (
             <Button
@@ -318,26 +315,43 @@ const CollectionsIndexSearch = ({
             </Button>
             )}
 
-          </Left>
-          <TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
-            <View><Text style={styles.dash}>Search Collections</Text></View>
-          </TouchableOpacity>
+          <View style={(disableReset)? styles.searchBoxDivMain : styles.searchBoxDivMainWithReset}>
 
-          <Right onPress={() => setShowSearch(!showSearch)}>
-            <TouchableOpacity
-              style={styles.leftRightPadding}
-              onPress={() => setShowSearch(!showSearch)}
-            >
+            <View style={styles.textInputContainer}>
 
-              <Ionicons
-                name={showSearch ? 'chevron-up' : 'chevron-down'}
-                size={24}
-                color={Colors.expandTimeline}
+              <TextInput
+                onTouchStart={() => setOpen(false)}
+                style={styles.textInput}
+                value={title}
+                onChangeText={onChangeTitle}
+                placeholder="search Collections' names and purposes"
+                placeholderTextColor="#777777"
+                autoFocus
               />
-            </TouchableOpacity>
+            </View>
 
+
+
+          </View>
+          <Right>
+          <TouchableOpacity
+            style={styles.dropDownButton}
+            onPress={() => setShowSearch(!showSearch)}
+          >
+
+            <Ionicons
+              name={showSearch ? 'chevron-up' : 'chevron-down'}
+              size={24}
+              color={Colors.expandTimeline}
+            />
+          </TouchableOpacity>
           </Right>
+          </View>
 
+
+            {//<TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
+              //<View><Text style={styles.dash}>Search Collections</Text></View></TouchableOpacity>
+            }
         </View>
       </View>
       {/* </TouchableOpacity> */}
@@ -347,7 +361,7 @@ const CollectionsIndexSearch = ({
     && (
     <KeyboardAvoidingView style={[styles.searchItemsDiv, styles.zindex]}>
 
-      <View style={styles.searchBoxDiv}>
+      {/*<View style={styles.searchBoxDiv}>
 
         <View style={styles.textInputContainer}>
 
@@ -361,7 +375,7 @@ const CollectionsIndexSearch = ({
             autoFocus
           />
         </View>
-      </View>
+      </View>*/}
 
       { // <View style={styles.dropDown}>
         // <Text style={styles.dropDowntextInstructions}>Specify tags
@@ -460,6 +474,7 @@ const CollectionsIndexSearch = ({
           keyboardShouldPersistTaps="handled"
         >
           {Object.entries(collectionsList).map(([id, { label }]) => (
+
             <CollectionRow
               key={id}
               collectionId={id}
@@ -492,7 +507,7 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     paddingHorizontal: 0,
-    margin: 2,
+    margin: 0,
     borderRadius: 10,
     backgroundColor: 'white',
     flexDirection: 'row',
@@ -510,6 +525,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
   },
+
+
   checkboxRow: {
     paddingTop: 40,
     paddingLeft: 15,
@@ -555,6 +572,7 @@ const styles = StyleSheet.create({
   searchBoxDiv: {
     paddingBottom: 8,
   },
+
   dropDowntextInstructions: {
     paddingLeft: 2,
     paddingBottom: 4,
@@ -646,15 +664,15 @@ const styles = StyleSheet.create({
   hidden: {
   },
   reset_button: {
-    marginHorizontal: 10,
-    marginVertical: -5,
+    marginHorizontal: -5,
+    marginVertical: 0,
+    padding:0
   },
   button: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
-
     backgroundColor: 'white',
     borderColor: 'white',
     marginHorizontal: 4,
@@ -670,5 +688,28 @@ const styles = StyleSheet.create({
     zIndex: 100,
 
   },
+  topRow:{
+    width:'100%',
+    alignItems: 'center',
+    flexDirection: 'row',
 
+  },
+  dropDownButton: {
+    paddingLeft:10,
+    paddingRight:10,
+
+  },
+  searchBoxDivMain: {
+
+    width:'90%',
+    paddingLeft:5,
+    margin:0,
+
+  },
+  searchBoxDivMainWithReset: {
+    width:'71%',
+    paddingLeft:0,
+    margin:0,
+
+  },
 });

@@ -100,23 +100,13 @@ const CollectionRow = ({
         <View style={styles.collectionRowCountIconsContainer}>
           <CountInfo count={savedRecordsCount} color={Colors.collectionYellow} />
           <CountInfo count={collectionNotesCount + recordNotesCount} color={Colors.mediumgrey} />
-          <Text style={styles.labelText}>{label}</Text>
-        </View>
-        <View style={styles.iconContainer}>
-
-          {collection?.current
-            && (
-            <View style={styles.iconPadding}>
-              <Feather name="watch" size={20} color={Colors.currentCollectionColor} />
-            </View>
-            )}
           {collection?.urgent
             && (
-            <View style={styles.iconPadding}>
-              <Feather name="alert-triangle" size={20} color={Colors.destructive} />
-            </View>
+              <Text style={styles.urgencyText}>{"!"}</Text>
             )}
-
+          <Text style={collection?.current ? styles.labelTextBold : styles.labelText}>{label}</Text>
+        </View>
+        <View style={styles.iconContainer}>
           <TouchableOpacity style={styles.infoIcon} onPress={() => setShowDetails(!showDetails)}>
             <Ionicons name="information-circle-outline" size={24} color="black" />
           </TouchableOpacity>
@@ -276,6 +266,18 @@ const styles = StyleSheet.create({
   labelText: {
     fontSize: 16,
   },
+  labelTextBold: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  urgencyText: {
+    fontSize: 20,
+    paddingRight:2,
+    fontWeight: "bold",
+    color: "red"
+  },
+
   collectionRowCountIconsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
