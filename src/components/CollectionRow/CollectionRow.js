@@ -77,7 +77,7 @@ const CollectionRow = ({
   const handlePress = () => {
     selectCollectionAction(collectionId);
     isAddingNewCollectionAction(false);
-
+    console.log("oof");
     navigation.navigate('Catalog');
   };
   const createdDate = formatDateShort(collection.created);
@@ -96,30 +96,26 @@ const CollectionRow = ({
         </View>
         <DateInfo date={createdDate} color={Colors.darkgrey} />
       </View>
+
+
       <TouchableOpacity style={styles.collectionRow} onPress={handlePress}>
         <View style={styles.collectionRowCountIconsContainer}>
+        <TouchableOpacity style={styles.infoIcon} onPress={() => setShowDetails(!showDetails)}>
+          <Ionicons
+            name={showDetails ? 'chevron-up' : 'chevron-down'}
+            size={24}
+            color={Colors.expandTimeline}
+          />
+        </TouchableOpacity>
           <CountInfo count={savedRecordsCount} color={Colors.collectionYellow} />
           <CountInfo count={collectionNotesCount + recordNotesCount} color={Colors.mediumgrey} />
-          <Text style={styles.labelText}>{label}</Text>
-        </View>
-        <View style={styles.iconContainer}>
-
-          {collection?.current
-            && (
-            <View style={styles.iconPadding}>
-              <Feather name="watch" size={20} color={Colors.currentCollectionColor} />
-            </View>
-            )}
           {collection?.urgent
             && (
-            <View style={styles.iconPadding}>
-              <Feather name="alert-triangle" size={20} color={Colors.destructive} />
-            </View>
+              <Text style={styles.urgencyText}>{"!"}</Text>
             )}
-
-          <TouchableOpacity style={styles.infoIcon} onPress={() => setShowDetails(!showDetails)}>
-            <Ionicons name="information-circle-outline" size={24} color="black" />
-          </TouchableOpacity>
+          <Text style={collection?.current ? styles.labelTextBold : styles.labelText}>{label}</Text>
+        </View>
+        <View style={styles.iconContainer}>
           <CollectionRowActionIcon collectionId={collectionId} collectionLabel={label} />
         </View>
       </TouchableOpacity>
@@ -147,16 +143,16 @@ const CollectionRow = ({
             && (
             <View style={styles.currentTextField}>
 
-              <Feather name="watch" size={18} color={Colors.currentCollectionColor} />
+              <Feather name="bold" size={18} style = {styles.icon_weight}/>
 
               <Text style={styles.switchText}>Current Collection</Text>
             </View>
             )}
             {collection?.urgent
             && (
-            <View style={styles.currentTextField}>
-              <Feather name="alert-triangle" size={18} color={Colors.destructive} />
+            <View style={styles.urgentTextField}>
 
+              <Text style={styles.detailsUrgencyText}>{"!"}</Text>
               <Text variant="title" style={styles.switchText}>Urgent Collection</Text>
             </View>
             )}
@@ -217,7 +213,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(CollectionRow);
 
 const styles = StyleSheet.create({
   collectionRowContainer: {
-    width: '90%',
+    width: '100%',
     paddingTop: 12,
   },
   collectionRow: {
@@ -228,9 +224,13 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingRight:"5%"
   },
   infoIcon: {
-    marginRight: 8,
+    marginRight: 5,
+    marginLeft:0,
+    left:0,
+
   },
   countIcon: {
     height: 25,
@@ -254,6 +254,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 8,
     marginTop: 4,
+    marginHorizontal:"5%",
   },
   dateRow: {
     flexDirection: 'row',
@@ -269,6 +270,7 @@ const styles = StyleSheet.create({
   dateInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingLeft:"10%",
   },
   dateInfoMargin: {
     marginRight: 24,
@@ -276,18 +278,49 @@ const styles = StyleSheet.create({
   labelText: {
     fontSize: 16,
   },
+  labelTextBold: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  urgencyText: {
+    fontSize: 20,
+    paddingRight:2,
+    fontWeight: "bold",
+    color: "red"
+  },
+
+  detailsUrgencyText: {
+    fontSize: 20,
+    paddingHorizontal:5,
+    paddingRight:6,
+    fontWeight: "bold",
+    color: "red"
+  },
+
   collectionRowCountIconsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingLeft:10,
   },
   descriptionContainer: {
     marginBottom: 12,
   },
+
   currentTextField: {
     flexDirection: 'row',
     paddingTop: 2,
-    paddingBottom: 5,
+    fontWeight:"bold",
+    paddingBottom: 2,
+    paddingLeft: 3,
+  },
 
+  urgentTextField: {
+    flexDirection: 'row',
+    paddingTop: 2,
+    alignItems: 'center',
+    paddingBottom: 0,
+    fontWeight:"bold",
     paddingLeft: 3,
   },
   switchText: {
@@ -317,4 +350,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
 
   },
+  icon_weight:{
+    fontWeight: 'bold'
+  }
 });

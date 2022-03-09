@@ -2,6 +2,7 @@ import React from 'react';
 import {
   SafeAreaView,
   StyleSheet,
+  View,
 } from 'react-native';
 import { shape } from 'prop-types';
 import { connect } from 'react-redux';
@@ -44,30 +45,8 @@ const CollectionsListScreen = ({ route, collectionsCounter, navigation }) => (
       showNewCollectionButton={getFocusedRouteNameFromRoute(route) !== ROUTES.COLLECTIONS.UPDATES}
       navigation={navigation}
     />
-    <Tab.Navigator
-      initialRouteName={ROUTES.COLLECTIONS.BUILDS}
-      tabBarOptions={{
-        labelStyle: styles.tabText,
-        indicatorStyle: {
-          backgroundColor: Colors.collectionYellow,
-        },
-      }}
-    >
-      <Tab.Screen
-        name={ROUTES.COLLECTIONS.BUILDS}
-        options={{
-          title: `${collectionsCounter.customCount} Builds`,
-        }}
-        component={CollectionsIndexCustom}
-      />
-      <Tab.Screen
-        name={ROUTES.COLLECTIONS.UPDATES}
-        options={{
-          title: `${collectionsCounter.preBuiltCount} Updates`,
-        }}
-        component={CollectionsIndexPrebuilt}
-      />
-    </Tab.Navigator>
+    <CollectionsIndexCustom navigation={navigation}/>
+
   </SafeAreaView>
 );
 
@@ -97,4 +76,5 @@ const styles = StyleSheet.create({
     textTransform: 'none',
     ...body1,
   },
+
 });

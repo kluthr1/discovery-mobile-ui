@@ -1,7 +1,7 @@
 import {
   arrayOf, bool, func, string, shape,
 } from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet, TouchableOpacity, Text, View,
 } from 'react-native';
@@ -12,9 +12,10 @@ import Colors from '../../constants/Colors';
 import { activeCollectionResourceIdsSelector, activeCollectionShowCollectionOnlySelector } from '../../redux/selectors';
 import { addResourceToCollection, removeResourceFromCollection } from '../../redux/action-creators';
 
-const CollectionIcon = ({
+const CollectionIconWithUndo = ({
   collectionId,
   resourceIds,
+  previousResourceIds,
   showCount,
   addResourceToCollectionAction,
   removeResourceFromCollectionAction,
@@ -27,10 +28,34 @@ const CollectionIcon = ({
   }, 0);
 
   const iconCount = (showCount && resourceCount) ? resourceCount : null;
+  const [numClicks, setNumClicks] = useState(0);
 
-  const handlePress = () => (resourceCount === resourceIds.length
-    ? removeResourceFromCollectionAction(collectionId, resourceIds)
-    : addResourceToCollectionAction(collectionId, resourceIds));
+  const handlePress = () => {
+    setNumClicks((numClicks + 1)%3)
+    console.log("Previous Records")
+    console.log(previousResourceIds.length);
+    console.log("Current Records")
+    console.log(resourceCount);
+    console.log("Total Records in Icon");
+    console.log(resourceIds.length);
+
+
+    if(previousResourceIds.length === 0 || previousResourceIds.length === resourceIds.length){
+
+      (resourceCount === resourceIds.length
+      ? removeResourceFromCollectionAction(collectionId, resourceIds)
+      : addResourceToCollectionAction(collectionId, resourceIds))
+    }else{
+      if (resourceCount === 0){
+        addResourceToCollectionAction(collectionId, previousResourceIds)
+      }
+      else if(resourceCount === resourceIds.length){
+        removeResourceFromCollectionAction(collectionId, resourceIds)
+      }else{
+        addResourceToCollectionAction(collectionId, resourceIds)
+      }
+    }
+  };
 
   // eslint-disable-next-line no-nested-ternary
   const iconColor = resourceCount
@@ -60,7 +85,7 @@ const CollectionIcon = ({
   );
 };
 
-CollectionIcon.propTypes = {
+CollectionIconWithUndo.propTypes = {
   collectionId: string.isRequired,
   resourceIds: arrayOf(string.isRequired).isRequired,
   showCount: bool.isRequired,
@@ -80,7 +105,7 @@ const mapDispatchToProps = {
   removeResourceFromCollectionAction: removeResourceFromCollection,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CollectionIcon);
+export default connect(mapStateToProps, mapDispatchToProps)(CollectionIconWithUndo);
 
 const styles = StyleSheet.create({
   text: {

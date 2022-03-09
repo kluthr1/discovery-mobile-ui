@@ -33,6 +33,17 @@ export const updateDateRange = (fieldKey, date) => (dispatch, getState) => {
   });
 };
 
+export const updateSearchTerm = (term) => (dispatch, getState) => {
+  const { activeCollectionId } = getState();
+  return dispatch({
+    type: actionTypes.UPDATE_SEARCH_TERM,
+    payload: {
+      collectionId: activeCollectionId,
+      searchTerm: term
+    },
+  });
+};
+
 export const addResourceToCollection = (collectionId, resourceIds) => {
   const payloadIds = Array.isArray(resourceIds) ? resourceIds : [resourceIds];
   return ({

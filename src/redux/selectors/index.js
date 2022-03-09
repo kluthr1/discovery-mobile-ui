@@ -76,6 +76,32 @@ export const activeCollectionDateRangeFilterSelector = createSelector(
   },
 );
 
+export const activeSearchFilterSelector = createSelector(
+  [activeCollectionSelector],
+  (activeCollection) => {
+    return ({
+      searchTerms: [activeCollection.searchFilter],
+      includeAll: true
+    });
+  },
+);
+
+function validSearchFilter(subType, filter){
+  for(var x in filter["searchTerms"]){
+    if(filter["searchTerms"][x] != undefined){
+      var words  = filter["searchTerms"][x].split(' ')
+      for(var j in words){
+        if(!subType.toLowerCase().includes(words[j].toLowerCase())){
+          return false;
+        }
+      }
+   }
+  }
+  return true;
+
+}
+
+
 export const activeCollectionMarkedResourcesSelector = createSelector(
   [activeCollectionSelector],
   (activeCollection) => Object.entries(activeCollection.records)
@@ -281,8 +307,9 @@ const allRecordsWithFilterResponseSelector = createSelector(
     activeCollectionSelector,
     dateRangeForAllRecordsSelector,
     activeCollectionDateRangeFilterSelector,
+    activeSearchFilterSelector,
   ],
-  (items, activeCollection, dateRangeForAllRecords, activeCollectionDateRangeFilter) => {
+  (items, activeCollection, dateRangeForAllRecords, activeCollectionDateRangeFilter, activeSearchFilter) => {
     const { minimumDate, maximumDate } = dateRangeForAllRecords;
     const {
       resourceTypeFilters,
@@ -293,7 +320,6 @@ const allRecordsWithFilterResponseSelector = createSelector(
 
     // eslint-disable-next-line max-len
     const { dateRangeStart = minimumDate, dateRangeEnd = maximumDate } = activeCollectionDateRangeFilter;
-
     return items.map(({
       id, type, subType, timelineDate,
     }) => ({
@@ -310,6 +336,7 @@ const allRecordsWithFilterResponseSelector = createSelector(
             end: dateRangeEnd,
           },
         ),
+        subTypeString: validSearchFilter(subType, activeSearchFilter),
         inCollection: records[id]?.saved,
         dateSaved: records[id]?.dateSaved,
         showCollectionOnly: !showCollectionOnly || (showCollectionOnly && records[id]?.saved),
@@ -358,8 +385,10 @@ const recordsFilteredByAllButDateSelector = createSelector(
       type,
       showCollectionOnly,
       showHighlightedOnly,
+      subTypeString
+
     },
-  }) => type && showCollectionOnly && showHighlightedOnly),
+  }) => type && showCollectionOnly && showHighlightedOnly && subTypeString),
 );
 
 // This returns an Array of picked fields and 'passesFilters' map, not underlying records:
@@ -538,6 +567,14 @@ export const savedRecordsBySavedDaySelector = createSelector(
       }), []);
   },
 );
+function searchCollectionItems(type, activeCollections){
+  console.log(type)
+  for(var i in activeCollections){
+    console.log(activeCollections[i]["passesFilters"]["inCollection"])
+  }
+  return false;
+
+};
 
 export const orderedResourceTypeFiltersSelector = createSelector(
   [activeCollectionResourceTypeFiltersSelector, allRecordsWithFilterResponseSelector],
@@ -548,16 +585,18 @@ export const orderedResourceTypeFiltersSelector = createSelector(
       label: PLURAL_RESOURCE_TYPES[type],
       hasCollectionItems: !!items.find(({
         type: t,
-        passesFilters: { date, showHighlightedOnly, inCollection },
-      }) => type === t && date && showHighlightedOnly && inCollection),
+        passesFilters: { date, showHighlightedOnly, inCollection, subTypeString },
+      }) => type === t && date && inCollection && subTypeString  ), /* searchCollectionItems(type, items), */
+
+
       hasHighlightedItems: !!items.find(({
         type: t,
-        passesFilters: { date, showCollectionOnly, isHighlighted },
-      }) => type === t && date && showCollectionOnly && isHighlighted),
+        passesFilters: { date, showCollectionOnly, isHighlighted, subTypeString },
+      }) => type === t && date && showCollectionOnly && isHighlighted && subTypeString) ,
       hasItemsInDateRange: !!items.find(({
         type: t,
-        passesFilters: { date, showCollectionOnly, showHighlightedOnly },
-      }) => type === t && date && showCollectionOnly && showHighlightedOnly),
+        passesFilters: { date, showCollectionOnly, showHighlightedOnly, subTypeString },
+      }) => type === t && date && showCollectionOnly && showHighlightedOnly && subTypeString),
     }))
     .sort(({ label: l1 }, { label: l2 }) => ((l1.toLowerCase() < l2.toLowerCase()) ? -1 : 1)),
 );

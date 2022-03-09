@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   StyleSheet, View,
 } from 'react-native';
@@ -42,7 +42,27 @@ const ResourceTypePicker = ({
   allTypeFilters,
   selectResourceTypeAction,
   selectedResourceType,
-}) => (
+}) => {
+  useEffect(() => {
+    var firstOption = "";
+    var updateSelection = false;
+    for (var i in allTypeFilters){
+      if (firstOption == "" && allTypeFilters[i]["hasItemsInDateRange"]){
+        firstOption = allTypeFilters[i]["type"];
+      }
+      if(allTypeFilters[i]["type"] == selectedResourceType){
+        if (!allTypeFilters[i]["hasItemsInDateRange"]){
+          updateSelection = true;
+        }
+      }
+    }
+    if (updateSelection && firstOption != ""){
+      selectResourceTypeAction(firstOption)
+    }
+  }, [allTypeFilters, selectedResourceType]);
+
+
+  return (
   <View>
     <ScrollView
       style={styles.root}
@@ -69,7 +89,7 @@ const ResourceTypePicker = ({
       }
     </ScrollView>
   </View>
-);
+)};
 
 ResourceTypePicker.propTypes = {
   allTypeFilters: arrayOf(shape({
@@ -102,6 +122,7 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     flexDirection: 'row',
     paddingHorizontal: 5,
+    zIndex:-1
   },
   button: {
     flexDirection: 'row',
@@ -121,6 +142,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 45,
     alignItems: 'center',
+    zIndex:-1
+
   },
 });
 
@@ -140,5 +163,7 @@ const textStyles = StyleSheet.create({
     fontSize: 16,
     paddingRight: 4,
     color: Colors.collectionIcon,
+    zIndex:-1
+
   },
 });

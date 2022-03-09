@@ -3,9 +3,7 @@ import { func, instanceOf } from 'prop-types';
 import {
   Platform, View, Text, StyleSheet, TouchableOpacity,
 } from 'react-native';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import DateTimePicker from '@react-native-community/datetimepicker';
-// ^ from: native-base#@react-native-#datetimepicker
 import { format } from 'date-fns';
 
 import Colors from '../../constants/Colors';

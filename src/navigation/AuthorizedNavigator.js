@@ -26,7 +26,7 @@ function selectIconName(name, focused) {
       return focused ? 'md-grid-sharp' : 'md-grid-outline';
     case 'Collections':
       return focused ? 'albums' : 'albums-outline';
-    case 'Updates':
+    case 'Reports':
       return focused ? 'newspaper-variant' : 'newspaper-variant-outline';
     default:
       return '';
@@ -36,7 +36,7 @@ function selectIconName(name, focused) {
 // selectScreenOptions is a function that returns a POJO
 const selectScreenOptions = ({ route: { name } }) => ({
   tabBarIcon: ({ focused, color, size }) => ( // eslint-disable-line react/prop-types
-    name === 'Updates'
+    name === 'Reports'
       ? (
         <MaterialCommunityIcons
           name={selectIconName(name, focused)}
@@ -102,7 +102,7 @@ const AuthorizedNavigator = () => (
     >
       <HomeTab.Screen name="Profile" component={ProfileScreen} />
       <HomeTab.Screen name="Summary" component={SummaryScreen} />
-      <HomeTab.Screen name="Updates" component={UpdatesScreen} />
+      <HomeTab.Screen name="Reports" component={UpdatesScreen} />
       <HomeTab.Screen name="Collections" component={CollectionStackScreen} />
     </HomeTab.Navigator>
   </StateProvider>

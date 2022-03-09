@@ -43,8 +43,7 @@ const CollectionsIndexHeader = ({
   isAddingNewCollectionAction,
 }) => {
   const [collectionsDialogText, setCollectionsDialogText] = useState(null);
-  const totalCollectionsCount = collectionsCounter.customCount + collectionsCounter.preBuiltCount;
-
+  const totalCollectionsCount = collectionsCounter.customCount ;
   const handleNewCollectionPress = () => {
     isAddingNewCollectionAction(true);
     navigation.navigate('CollectionInput');
@@ -57,7 +56,7 @@ const CollectionsIndexHeader = ({
         <Left />
         <View style={styles.headerTitleContainer}>
           {totalCollectionsCount > 0 && <HeaderCountIcon count={totalCollectionsCount} />}
-          <Title style={styles.headerText}>Collections</Title>
+          <Title style={styles.headerText}>{ ((totalCollectionsCount != 1)? "Collections": "Collection")}</Title>
         </View>
         <Right>
           {showNewCollectionButton

@@ -346,6 +346,16 @@ export const collectionsReducer = (state = preloadCollections, action) => {
         }
       });
     }
+    case actionTypes.UPDATE_SEARCH_TERM: {
+      const { searchTerm } = action.payload;
+
+
+      return produce(state, (draft) => {
+
+        draft[collectionId].searchFilter = searchTerm;
+
+      });
+    }
     case actionTypes.UPDATE_MARKED_RESOURCES: {
       const { subType, resourceIdsMap } = action.payload;
 
@@ -364,10 +374,12 @@ export const collectionsReducer = (state = preloadCollections, action) => {
           .forEach(([id, next]) => {
             records[id] = records[id] ?? createNewCollectionRecord();
             const { highlight: prev } = records[id];
+
             records[id].highlight = ((prev === MARKED && next === FOCUSED) ? FOCUSED : next);
           });
       });
     }
+  
     case actionTypes.CLEAR_MARKED_RESOURCES: {
       return produce(state, (draft) => {
         Object.values(draft[collectionId].records).forEach((attributes) => {
@@ -525,14 +537,17 @@ export const collectionsReducer = (state = preloadCollections, action) => {
         urgent,
       } = action.payload;
       return produce(state, (draft) => {
-        draft[collectionId] = { // eslint-disable-line no-param-reassign
-          ...draft[collectionId],
-          purpose,
-          tags,
-          current,
-          urgent,
-          lastUpdated: new Date(),
-        };
+        // eslint-disable-next-line no-param-reassign
+        draft[collectionId].purpose = purpose;
+        // eslint-disable-next-line no-param-reassign
+        draft[collectionId].tags = tags;
+
+        draft[collectionId].current = current;
+
+        draft[collectionId].urgent = urgent;
+
+        // eslint-disable-next-line no-param-reassign
+        draft[collectionId].lastUpdated = new Date();
       });
     }
     default:

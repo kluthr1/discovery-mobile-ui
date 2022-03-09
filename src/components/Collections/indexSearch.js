@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, ScrollView, SafeAreaView,
   KeyboardAvoidingView, TouchableWithoutFeedback,
-  View, TouchableOpacity, TextInput, Text,
+  View, TouchableOpacity, TextInput, Text, Keyboard,
 } from 'react-native';
 import { Chip, Button } from 'react-native-paper';
 
@@ -11,7 +11,7 @@ import { shape } from 'prop-types';
 import {
   Right, Left,
 } from 'native-base';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
 
 import CollectionRow from '../CollectionRow/CollectionRow';
@@ -91,9 +91,13 @@ const CollectionsIndexSearch = ({
     Object.keys(collections).forEach((i) => {
       let toAdd = true;
       if (title.length > 0 && toAdd) {
-        if (!(collections[i].label.includes(title)) && !(collections[i].purpose.includes(title))) {
-          toAdd = false;
-          // console.log("oof urgent")
+
+        var words  = title.split(' ')
+        for(var j in words){
+          if(!collections[i].label.toLowerCase().includes(words[j].toLowerCase())
+            && !(collections[i].purpose.includes(words[j].toLowerCase())) ){
+              toAdd = false;
+          }
         }
       }
       for (let j = 0; j < value.length; j += 1) {
@@ -124,33 +128,39 @@ const CollectionsIndexSearch = ({
     editCollectionsList(newCollectionsList);
     if (title.length > 0) {
       searchText.push(
-        <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
-          {' '}
-          {'phrase: '}
-        </Text>,
-      );
-      searchText.push(
-        <Text style={{ padding: 0 }}>
-          {' '}
-          {title}
-        </Text>,
-      );
-      threeLineSearchText.push(
-        <View style={styles.threeLineSummary}>
+        <>
           <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
             {' '}
             {'phrase: '}
           </Text>
-          <Text style={{ padding: 0 }}>
-            {' '}
-            {`${title}; `}
-          </Text>
-          <Text style={{ padding: 0 }}>
-            {' '}
-            {}
-          </Text>
-        </View>,
+        </>,
       );
+      searchText.push(
+        <>
+          <Text style={{ padding: 0 }}>
+            {' '}
+            {title}
+          </Text>
+        </>,
+      );
+      /*threeLineSearchText.push(
+        <>
+          <View style={styles.threeLineSummary}>
+            <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
+              {' '}
+              {'phrase: '}
+            </Text>
+            <Text style={{ padding: 0 }}>
+              {' '}
+              {`${title}; `}
+            </Text>
+            <Text style={{ padding: 0 }}>
+              {' '}
+              {}
+            </Text>
+          </View>
+        </>,
+      );*/
     }
 
     if (value.length > 0) {
@@ -164,95 +174,101 @@ const CollectionsIndexSearch = ({
         }
       }
       threeLineSearchText.push(
-        <View style={styles.threeLineSummary}>
-          <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
-            {' '}
-            {'tags: '}
-          </Text>
-          <Text style={{ padding: 0 }}>
-            {' '}
-            {tagList}
-          </Text>
-        </View>,
+        <>
+          <View style={styles.threeLineSummary}>
+            <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
+              {' '}
+              {'tags: '}
+            </Text>
+            <Text style={{ padding: 0 }}>
+              {' '}
+              {tagList}
+            </Text>
+          </View>
+        </>,
       );
 
       if (title.length > 0) {
-        searchText.push(<Text style={{ padding: 0 }}>{'; '}</Text>);
+        searchText.push(<><Text style={{ padding: 0 }}>{'; '}</Text></>);
       }
       searchText.push(
-        <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
-          {' '}
-          {'selected tags: '}
-        </Text>,
+        <>
+          <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
+            {' '}
+            {'selected tags: '}
+          </Text>
+        </>,
       );
       for (let j = 0; j < value.length; j += 1) {
         searchText.push(
-          <Text style={{ padding: 0 }}>
-            {' '}
-            {value[j]}
-          </Text>,
+          <>
+            <Text style={{ padding: 0 }}>
+              {' '}
+              {value[j]}
+            </Text>
+          </>,
         );
         if (j !== value.length - 1) {
-          searchText.push(<Text style={{ padding: 0 }}>{', '}</Text>);
+          searchText.push(<><Text style={{ padding: 0 }}>{', '}</Text></>);
         }
         if (j === value.length - 1 && (current || urgent || notCurrent || notUrgent)) {
-          searchText.push(<Text style={{ padding: 0 }}>{'; '}</Text>);
+          searchText.push(<><Text style={{ padding: 0 }}>{'; '}</Text></>);
         }
       }
     } else if (title.length > 0 && (current || urgent || notCurrent || notUrgent)) {
-      searchText.push(<Text style={{ padding: 0 }}>{'; '}</Text>);
+      searchText.push(<><Text style={{ padding: 0 }}>{'; '}</Text></>);
     }
     let priorityText = '';
 
     if (urgent) {
-      searchText.push(<Text style={{ fontWeight: 'bold', padding: 0 }}>{'priority: '}</Text>);
-      searchText.push(<Text>current, urgent;</Text>);
+      searchText.push(<><Text style={{ fontWeight: 'bold', padding: 0 }}>{'priority: '}</Text></>);
+      searchText.push(<><Text>current, urgent;</Text></>);
       priorityText = 'current, urgent;';
     } else if (current) {
       if (notUrgent) {
-        searchText.push(<Text style={{ fontWeight: 'bold' }}>{'priority: '}</Text>);
-        searchText.push(<Text>current, not urgent;</Text>);
+        searchText.push(<><Text style={{ fontWeight: 'bold' }}>{'priority: '}</Text></>);
+        searchText.push(<><Text>current, not urgent;</Text></>);
         priorityText = 'current, not urgent;';
       } else {
-        searchText.push(<Text style={{ fontWeight: 'bold' }}>{'priority: '}</Text>);
-        searchText.push(<Text>current;</Text>);
+        searchText.push(<><Text style={{ fontWeight: 'bold' }}>{'priority: '}</Text></>);
+        searchText.push(<><Text>current;</Text></>);
         priorityText = 'current;';
       }
     }
     if (notCurrent) {
-      searchText.push(<Text style={{ fontWeight: 'bold' }}>{'priority: '}</Text>);
-      searchText.push(<Text>{'not current, not urgent; '}</Text>);
+      searchText.push(<><Text style={{ fontWeight: 'bold' }}>{'priority: '}</Text></>);
+      searchText.push(<><Text>{'not current, not urgent; '}</Text></>);
       priorityText = 'not current, not urgent;';
     } else if (!current && notUrgent) {
-      searchText.push(<Text style={{ fontWeight: 'bold' }}>{'priority: '}</Text>);
-      searchText.push(<Text>not urgent;</Text>);
+      searchText.push(<><Text style={{ fontWeight: 'bold' }}>{'priority: '}</Text></>);
+      searchText.push(<><Text>not urgent;</Text></>);
       priorityText = 'not urgent;';
     }
     if (current || urgent || notCurrent || notUrgent) {
       threeLineSearchText.push(
-        <View style={styles.threeLineSummary}>
-          <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
-            {' '}
-            {'priority: '}
-          </Text>
-          <Text style={{ padding: 0 }}>
-            {' '}
-            {priorityText}
-          </Text>
-        </View>,
+        <>
+          <View style={styles.threeLineSummary}>
+            <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
+              {' '}
+              {'priority: '}
+            </Text>
+            <Text style={{ padding: 0 }}>
+              {' '}
+              {priorityText}
+            </Text>
+          </View>
+        </>,
       );
     }
 
     setThreeLineDiv(threeLineSearchText);
 
-    if ((value.length > 0
-      || title.length > 0 || current || urgent || notCurrent || notUrgent) && !showSearch) {
+    if ((value.length > 0 || current || urgent || notCurrent || notUrgent) && !showSearch) {
       setShowSearchText(true);
     } else {
       setShowSearchText(false);
     }
-    if (value.length > 0
-      || title.length > 0 || current || urgent || notCurrent || notUrgent) {
+    if (value.length > 0 || current || urgent || notCurrent || notUrgent) {
       setDisableReset(false);
     } else {
       setDisableReset(true);
@@ -268,6 +284,7 @@ const CollectionsIndexSearch = ({
     }
     return (`${size.toString()} Results`);
   };
+  Keyboard.dismiss;
 
   function reset() {
     onChangeTitle('');
@@ -288,42 +305,63 @@ const CollectionsIndexSearch = ({
 
       > */}
 
+      {!disableReset
+      && (
+      <Button
+        style={styles.reset_button}
+        color={Colors.destructive}
+        mode="text"
+        onPress={reset}
+        uppercase={false}
+
+      >
+        reset search
+      </Button>
+      )}
+
+
       <View style={styles.root}>
         <View style={styles.dateRangeContainer}>
+          <View style={styles.topRow}>
 
-          <Left>
-            {!disableReset
-            && (
-            <Button
-              style={styles.reset_button}
-              color={Colors.destructive}
-              mode="text"
-              onPress={reset} /* eslint-disable-line react/jsx-no-bind */
-            >
-              RESET
-            </Button>
-            )}
 
-          </Left>
-          <TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
-            <View><Text style={styles.dash}>Search Collections</Text></View>
+          <View style={(disableReset)? styles.searchBoxDivMain : styles.searchBoxDivMain}>
+
+            <View style={styles.textInputContainer}>
+            <View style={styles.iconPadding}>
+              <Feather name="search" size={20} />
+            </View>
+
+              <TextInput
+                onTouchStart={() => setOpen(false)}
+                style={styles.textInput}
+                value={title}
+                onChangeText={onChangeTitle}
+                placeholder="search Collections"
+                placeholderTextColor="#777777"
+                autoFocus
+              />
+
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.dropDownButton}
+            onPress={() => setShowSearch(!showSearch)}
+          >
+
+            <Ionicons
+              name={showSearch ? 'chevron-up' : 'chevron-down'}
+              size={24}
+              color={Colors.expandTimeline}
+            />
           </TouchableOpacity>
 
-          <Right onPress={() => setShowSearch(!showSearch)}>
-            <TouchableOpacity
-              style={styles.leftRightPadding}
-              onPress={() => setShowSearch(!showSearch)}
-            >
+          </View>
 
-              <Ionicons
-                name={showSearch ? 'chevron-up' : 'chevron-down'}
-                size={24}
-                color={Colors.expandTimeline}
-              />
-            </TouchableOpacity>
 
-          </Right>
-
+            {//<TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
+              //<View><Text style={styles.dash}>Search Collections</Text></View></TouchableOpacity>
+            }
         </View>
       </View>
       {/* </TouchableOpacity> */}
@@ -333,7 +371,7 @@ const CollectionsIndexSearch = ({
     && (
     <KeyboardAvoidingView style={[styles.searchItemsDiv, styles.zindex]}>
 
-      <View style={styles.searchBoxDiv}>
+      {/*<View style={styles.searchBoxDiv}>
 
         <View style={styles.textInputContainer}>
 
@@ -347,7 +385,7 @@ const CollectionsIndexSearch = ({
             autoFocus
           />
         </View>
-      </View>
+      </View>*/}
 
       { // <View style={styles.dropDown}>
         // <Text style={styles.dropDowntextInstructions}>Specify tags
@@ -435,7 +473,9 @@ const CollectionsIndexSearch = ({
       <View style={(showSearchText) ? styles.threeLineSummaryDiv : { display: 'none' }}>
         {showSearchText && threeLineDiv}
       </View>
-      <View style={(!disableReset) ? styles.numResultsView : { display: 'none' }}>
+
+
+      <View style={(! (disableReset && title.length == 0) )? styles.numResultsView : { display: 'none' }}>
         <Text style={styles.dash}>{ Object.size(collectionsList)}</Text>
       </View>
 
@@ -446,6 +486,7 @@ const CollectionsIndexSearch = ({
           keyboardShouldPersistTaps="handled"
         >
           {Object.entries(collectionsList).map(([id, { label }]) => (
+
             <CollectionRow
               key={id}
               collectionId={id}
@@ -478,11 +519,16 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     paddingHorizontal: 0,
-    margin: 2,
+    margin: 1,
+    padding: 1,
+    paddingLeft:2,
+    paddingRight:2,
+
     borderRadius: 10,
     backgroundColor: 'white',
     flexDirection: 'row',
     borderWidth: 0.5,
+
 
   },
   textInput: {
@@ -496,6 +542,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
   },
+
+
   checkboxRow: {
     paddingTop: 40,
     paddingLeft: 15,
@@ -541,6 +589,7 @@ const styles = StyleSheet.create({
   searchBoxDiv: {
     paddingBottom: 8,
   },
+
   dropDowntextInstructions: {
     paddingLeft: 2,
     paddingBottom: 4,
@@ -632,15 +681,16 @@ const styles = StyleSheet.create({
   hidden: {
   },
   reset_button: {
-    marginHorizontal: 10,
-    marginVertical: -5,
+    marginHorizontal: -5,
+    marginVertical: 0,
+    marginBottom:-10,
+    padding:0
   },
   button: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
-
     backgroundColor: 'white',
     borderColor: 'white',
     marginHorizontal: 4,
@@ -656,5 +706,36 @@ const styles = StyleSheet.create({
     zIndex: 100,
 
   },
+  topRow:{
+    width:'100%',
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingRight:"3%",
 
+  },
+  dropDownButton: {
+    paddingLeft:5,
+    paddingRight:0,
+
+  },
+  searchBoxDivMain: {
+
+    width:'90%',
+    paddingLeft:5,
+    marginLeft:1,
+    paddingTop:1,
+    marginTop:1,
+    marginRight:1,
+    margin:0,
+
+  },
+  searchBoxDivMainWithReset: {
+    width:'71%',
+    paddingLeft:0,
+    margin:0,
+  },
+  iconPadding:{
+        paddingTop: 5,
+        paddingLeft:3
+  }
 });
