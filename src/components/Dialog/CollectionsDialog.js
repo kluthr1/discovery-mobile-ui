@@ -138,6 +138,7 @@ const CollectionsDialog = ({
   const hasMinLength = (text) => text.length > 0;
 
   const hasInputErrors = ({ text, isRename, label }) => {
+
     if (!hasMinLength(text)) {
       setErrorText(LABEL_LENGTH_ERROR);
       return true;

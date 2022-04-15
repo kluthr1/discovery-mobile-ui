@@ -32,12 +32,7 @@ const CollectionIconWithUndo = ({
 
   const handlePress = () => {
     setNumClicks((numClicks + 1)%3)
-    console.log("Previous Records")
-    console.log(previousResourceIds.length);
-    console.log("Current Records")
-    console.log(resourceCount);
-    console.log("Total Records in Icon");
-    console.log(resourceIds.length);
+
 
 
     if(previousResourceIds.length === 0 || previousResourceIds.length === resourceIds.length){

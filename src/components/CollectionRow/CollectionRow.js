@@ -77,7 +77,6 @@ const CollectionRow = ({
   const handlePress = () => {
     selectCollectionAction(collectionId);
     isAddingNewCollectionAction(false);
-    console.log("oof");
     navigation.navigate('Catalog');
   };
   const createdDate = formatDateShort(collection.created);

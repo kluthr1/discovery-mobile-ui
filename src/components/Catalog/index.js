@@ -9,7 +9,7 @@ import { connect, useSelector } from 'react-redux';
 import {
   Header, Right, Title, Left,
 } from 'native-base';
-import { Entypo, Feather } from '@expo/vector-icons'; // eslint-disable-line import/no-extraneous-dependencies
+import { Entypo, Feather, MaterialCommunityIcons } from '@expo/vector-icons'; // eslint-disable-line import/no-extraneous-dependencies
 
 import Timeline from '../Timeline';
 
@@ -31,8 +31,11 @@ import HeaderCountIcon from '../Icons/HeaderCountIcon';
 import TextStyles from '../../constants/TextStyles';
 import CollectionIcon from '../Icons/CollectionIcon';
 import CollectionIconWithUndo from '../Icons/CollectionIconWithUndo';
+import CollectionsDialog, { COLLECTIONS_DIALOG_ACTIONS, CollectionsDialogText } from '../Dialog/CollectionsDialog';
 
 const CatalogScreenHeader = ({ collection, navigation }) => {
+  const [collectionsDialogText, setCollectionsDialogText] = useState();
+
   const savedRecords = useSelector(savedRecordsSelector).length;
   return (
     <Header style={styles.header}>
@@ -42,10 +45,21 @@ const CatalogScreenHeader = ({ collection, navigation }) => {
           <Entypo name="chevron-thin-left" size={20} color={Colors.headerIcon} />
         </TouchableOpacity>
       </Left>
-      <View style={styles.headerTitleContainer}>
+      <TouchableOpacity style={styles.headerTitleContainer}
+        onPress={()=>
+          setCollectionsDialogText(CollectionsDialogText[COLLECTIONS_DIALOG_ACTIONS.RENAME])}>
+          {collectionsDialogText && (
+          <CollectionsDialog
+            collectionId={collection.id}
+            collectionLabel={collection?.label}
+
+            collectionsDialogText={collectionsDialogText}
+            setCollectionsDialogText={setCollectionsDialogText}
+          />
+          )}
         <HeaderCountIcon count={savedRecords} outline />
         <Title style={styles.collectionLabel}>{collection?.label}</Title>
-      </View>
+      </TouchableOpacity>
       <Right>
 
         <CatalogModal collectionId={collection.id} />
@@ -109,7 +123,6 @@ const Catalog = ({
     var collectionRecords  = 0;
     var previousRecords = []
     var prevHighlightedRecords = []
-    console.log()
 
     for (var i in allRecords){
       var string = allRecords[i]["subType"]
@@ -133,9 +146,7 @@ const Catalog = ({
             prevHighlightedRecords.push(allRecords[i].id)
           }
         }
-        /*if([allRecords[i].id].highlight > 0){
-          console.log("Gottem")
-        }*/
+
       }
 
       newAutoFill.push(allRecords[i]["subType"])
@@ -145,7 +156,6 @@ const Catalog = ({
     if(typeof prevRecord !== 'undefined' && typeof searchRecordText !== 'undefined'){
 
         if(prevRecord.length != searchRecordText.length){
-        console.log("Text Change, Permanent Changes")
         setRevertedCollectionRecords(previousRecords)
         setRevertedHighlightedRecords(prevHighlightedRecords)
 
@@ -204,8 +214,7 @@ const Catalog = ({
 
             <View  style = {styles.borderWrap}>
 
-              {/*<View style={(searchRecordText == "" ? styles.searchInputContainer : styles.searchInputContainerWithCollection)}>
-*/}
+
             <View style={(searchRecordText == "" ? styles.searchInputContainer : styles.searchInputContainer)}>
               <AutocompleteDropdown
                   clearOnFocus={false}
@@ -220,25 +229,10 @@ const Catalog = ({
                   previousResourceIds = {revertedCollectionRecords}
                   previousHighlightIds = {revertedHighlightedRecords}
                 />
-                {/*<TextInput
-                  style = {styles.textInput}
-                  onChangeText={setSearchRecordText}
-                  placeholder={"search records"}
-                  value={searchRecordText}
-                  multiline={false}
-                  autoFocus
-                />*/}
 
               </View>
               { searchRecordText != "" &&
                 <View style={styles.collectionIconWrapper}>
-
-              {/*<CollectionIconWithUndo
-                showCount={true}
-                collectionId={collection['id']}
-                resourceIds={resourceIds}
-                previousResourceIds = {revertedCollectionRecords}
-              />*/}
               </View>}
 
             </View>
@@ -248,15 +242,16 @@ const Catalog = ({
           {noRecords && (
           <View style={styles.zeroStateContainer}>
             <Text style={styles.zeroStateText}>
-              No Records available match.
+              no Records to visualize
             </Text>
           </View>
           )}
+          <ResourceTypePicker noRecords={noRecords}  />
+
           {!noRecords && (
+
           <>
-            <View style={styles.negZIndex}>
-            <ResourceTypePicker />
-            </View>
+
             <ScrollView style={styles.scrollView}>
               <SubTypeAccordionsContainer data={selectedRecordsGroupedByType} />
             </ScrollView>
@@ -264,6 +259,7 @@ const Catalog = ({
 
           </>
           )}
+
 
         </FilterDrawer>
 
@@ -326,9 +322,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   zeroStateContainer: {
-    flex: 1,
-    paddingTop: 28,
-    paddingHorizontal: 24,
+    height:191,
+    paddingTop:60,
     flexDirection: 'row',
     justifyContent: 'center',
     zIndex:-1,
@@ -385,10 +380,10 @@ const styles = StyleSheet.create({
     zIndex:-1,
     paddingBottom:2,
   },
-
   formHeader: {
     fontSize: 14,
     paddingLeft:10,
     paddingRight:25,
   },
+
 });

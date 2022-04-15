@@ -10,13 +10,16 @@ import {
 
 import { updateDateRange } from '../../redux/action-creators';
 import DatePicker from './DatePicker';
-import { timelinePropsSelector, activeCollectionDateRangeFilterSelector } from '../../redux/selectors';
+import { timelinePropsSelector, activeCollectionDateRangeFilterSelector,dateRangeForAllRecordsSelector } from '../../redux/selectors';
 import Colors from '../../constants/Colors';
 
-const DateRangePicker = ({ timelineProps, dateRangeFilter, updateDateRangeFilter }) => {
-  const { minimumDate, maximumDate } = timelineProps;
+const DateRangePicker = ({ timelineProps, dateRangeFilter, updateDateRangeFilter, allDateRange }) => {
+  var { minimumDate, maximumDate } = timelineProps;
   if (!minimumDate || !maximumDate) {
-    return null;
+    var { minimumDate, maximumDate } = allDateRange
+    if (!minimumDate || !maximumDate) {
+      return null;
+    }
   }
 
   const { dateRangeStart = minimumDate, dateRangeEnd = maximumDate } = dateRangeFilter;
@@ -55,6 +58,7 @@ DateRangePicker.propTypes = {
 const mapStateToProps = (state) => ({
   timelineProps: timelinePropsSelector(state),
   dateRangeFilter: activeCollectionDateRangeFilterSelector(state),
+  allDateRange: dateRangeForAllRecordsSelector(state),
 });
 
 const mapDispatchToProps = {

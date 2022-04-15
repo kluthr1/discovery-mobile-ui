@@ -6,7 +6,8 @@ import * as config from './config';
 
 const Bar = ({
   x, height, width, color,
-}) => (
+}) => {
+   return (
   <Line
     x1={x}
     y1={config.BAR_HEIGHT}
@@ -17,7 +18,7 @@ const Bar = ({
     vectorEffect="non-scaling-stroke"
     shapeRendering="crispEdges"
   />
-);
+)};
 
 Bar.propTypes = {
   x: number.isRequired,

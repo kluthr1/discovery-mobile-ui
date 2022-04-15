@@ -33,10 +33,13 @@ const Label = ({ x, date, intervalInDays }) => (
       y1={config.BAR_HEIGHT + 4}
       x2={x}
       y2={config.BAR_HEIGHT - 2}
-      stroke={config.BAR_COLOR}
+      stroke={config.BOUNDARY_LINE_COLOR}
       strokeWidth="1"
       vectorEffect="non-scaling-stroke"
     />
+    {/* stroke={config.BAR_COLOR}*/}
+
+
     <SvgText
       fill={config.LABEL_COLOR}
       stroke="none"
@@ -67,10 +70,13 @@ const XAxis = ({ availableWidth, minDate, maxDate }) => {
         y1={config.BAR_HEIGHT + 2}
         x2={availableWidth}
         y2={config.BAR_HEIGHT + 2}
-        stroke={config.BAR_COLOR}
+        stroke={config.BOUNDARY_LINE_COLOR}
         strokeWidth="1"
         vectorEffect="non-scaling-stroke"
       />
+      {/* stroke={config.BAR_COLOR}*/}
+
+
       {
         generateIntervals(minDate, maxDate, hatchCount).map((date, i) => (
           <Label

@@ -58,6 +58,7 @@ export const activeCollectionSelector = createSelector(
 export const activeCollectionResourceTypeSelector = createSelector(
   [activeCollectionSelector],
   (activeCollection) => activeCollection.selectedResourceType,
+  
 );
 
 export const activeCollectionResourceTypeFiltersSelector = createSelector(
@@ -294,7 +295,7 @@ export const dateRangeForAllRecordsSelector = createSelector(
     const r1 = items[0]; // might be same as r2
     const r2 = items[items.length - 1];
     return ({
-      minimumDate: r1 && startOfDay(r1.timelineDate),
+      minimumDate: r1 && startOfDay(r1.timelineDate) ,
       maximumDate: r2 && endOfDay(r2.timelineDate),
     });
   },
@@ -465,6 +466,21 @@ export const selectedRecordsGroupedByTypeSelector = createSelector(
   },
 );
 
+export const filteredRecordsSelectorByType = createSelector(
+  [selectedRecordsGroupedByTypeSelector, filteredRecordsSelector],
+
+
+  (grouped, allRecords) =>{
+    var allRecordIds = []
+    for (var i = 0; i <  grouped.length; i++){
+      for (var j = 0 ; j< grouped[i]["subTypes"].length; j++){
+          allRecordIds = allRecordIds.concat(grouped[i]["subTypes"][j]["recordIds"])
+      }
+    }
+    return allRecordIds;
+  },
+);
+
 export const savedRecordsSelector = createSelector(
   [allRecordsWithFilterResponseSelector],
   (resources) => resources
@@ -568,10 +584,7 @@ export const savedRecordsBySavedDaySelector = createSelector(
   },
 );
 function searchCollectionItems(type, activeCollections){
-  console.log(type)
-  for(var i in activeCollections){
-    console.log(activeCollections[i]["passesFilters"]["inCollection"])
-  }
+
   return false;
 
 };
@@ -613,8 +626,137 @@ const MAX_INTERVAL_COUNT = 25;
 
 export const timelineIntervalsSelector = createSelector(
   [
-    filteredRecordsSelector, timelineRangeSelector, activeCollectionSelector, resourcesSelector], // eslint-disable-line max-len
-  (filteredItemsInDateRange, timelineRange, activeCollection, resources) => {
+    filteredRecordsSelector, timelineRangeSelector, activeCollectionSelector, resourcesSelector,
+    selectedRecordsGroupedByTypeSelector, recordsFilteredByAllButDateSelector, filteredRecordsSelectorByType], // eslint-disable-line max-len
+  (filteredItemsInDateRange, timelineRange, activeCollection, resources,
+    selectedRecords, recordsFiltered, byType) => {
+    const { records } = activeCollection;
+
+    let intervals = [];
+    let intervalsByType = [];
+
+    let intervalLength = 0;
+    let maxCount1SD = 0; // up to mean + 1 SD
+    let maxCount2SD = 0; // up to mean + 2 SD
+    let maxCount = 0; // beyond mean + 2 SD
+    let recordCount1SD = 0;
+    let recordCount2SD = 0;
+    let recordCount2SDplus = 0;
+    const { dateRangeStart: minDate, dateRangeEnd: maxDate } = timelineRange;
+    // alternatively:
+    // const minDate = filteredItemsInDateRange[0]?.timelineDate;
+    // const maxDate = filteredItemsInDateRange[filteredItemsInDateRange.length - 1]?.timelineDate;
+
+    if (minDate && maxDate && filteredItemsInDateRange.length) {
+      const numDays = Math.max(differenceInDays(maxDate, minDate), 1);
+      const intervalCount = Math.min(numDays, MAX_INTERVAL_COUNT); // cannot be 0
+
+      const intervalMap = createIntervalMap(minDate, maxDate, intervalCount);
+
+      const getNextIntervalForDate = generateNextIntervalFunc(intervalMap, intervalCount);
+
+      filteredItemsInDateRange.forEach(({ id, timelineDate }) => {
+        const currentInterval = getNextIntervalForDate(timelineDate);
+        if (currentInterval) {
+          currentInterval.items.push(id); // < mutates intervalMap
+          if (currentInterval.items.length > maxCount) {
+            maxCount = currentInterval.items.length;
+          }
+
+        } else {
+          console.warn('no interval for date: ', timelineDate); // eslint-disable-line no-console
+        }
+      });
+      console.log("Reload")
+
+
+      intervals = intervalMap;
+
+      intervalLength = numDays / intervalCount;
+    }
+
+    const intervalsWithItems = intervals.filter(({ items }) => items.length); // has items
+
+    if (intervalsWithItems.length) {
+      const itemCounts = intervalsWithItems.map(({ items }) => items.length);
+      const totalItemCount = itemCounts.reduce((acc, count) => acc + count, 0);
+      const meanCountPerInterval = totalItemCount / itemCounts.length;
+      const sumOfSquaredDifferences = itemCounts
+        .reduce((acc, count) => acc + ((count - meanCountPerInterval) ** 2), 0);
+
+      const populationSD = (sumOfSquaredDifferences / itemCounts.length) ** 0.5;
+
+      // inject z score, and markedItems -- mutates intervalMap:
+      intervalsWithItems.forEach((interval) => {
+        const cardinality = interval.items.length;
+        // eslint-disable-next-line no-param-reassign
+        interval.typeItems = [];
+
+        interval.zScore = !populationSD ? 0 : (cardinality - meanCountPerInterval) / populationSD;
+
+
+        // ^ mutates intervalMap
+        if (interval.zScore <= 1 && cardinality > maxCount1SD) {
+          maxCount1SD = cardinality;
+          recordCount1SD += cardinality;
+        } else if (interval.zScore <= 2 && cardinality > maxCount2SD) {
+          maxCount2SD = cardinality;
+          recordCount2SD += cardinality;
+        } else if (interval.zScore > 2) {
+          recordCount2SDplus += cardinality;
+        }
+        // temporary dictionary to group items by type:
+        const markedItemsDictionaryByType = interval.items
+          .filter((id) => records[id]?.highlight) // either MARKED or FOCUSED
+          .reduce((acc, id) => {
+            const { subType } = resources[id];
+            const idsByType = acc[subType] ?? [];
+            return {
+              ...acc,
+              [subType]: idsByType.concat(id),
+            };
+          }, {});
+        // eslint-disable-next-line no-param-reassign
+        interval.markedItems = Object.entries(markedItemsDictionaryByType)
+          .sort(sortMarkedItemsBySubType) // keep cartouches in alphabetical order by subType label
+          .map(([subType, items]) => ({
+            subType,
+            marked: items,
+            focused: items.filter((id) => records[id]?.highlight === FOCUSED),
+          }));
+
+        // eslint-disable-next-line no-param-reassign
+        interval.collectionItems = interval.items.filter((id) => records[id]?.saved);
+        interval.typeCollectionItems = interval.collectionItems.filter(function(obj) { return byType.indexOf(obj) == -1; });
+
+
+      });
+    }
+
+
+
+    return {
+      minDate,
+      maxDate,
+      intervalCount: intervals.length,
+      intervals: intervals.filter(({ items }) => items.length),
+      intervalLength,
+      maxCount,
+      maxCount1SD,
+      maxCount2SD,
+      recordCount: filteredItemsInDateRange.length,
+      recordCount1SD,
+      recordCount2SD,
+      recordCount2SDplus,
+    };
+  },
+);
+
+
+export const secondaryTimelineIntervalsSelector = createSelector(
+  [
+    filteredRecordsSelector, timelineRangeSelector, activeCollectionSelector, resourcesSelector, filteredRecordsSelectorByType], // eslint-disable-line max-len
+  (filteredItemsInDateRange, timelineRange, activeCollection, resources, byType) => {
     const { records } = activeCollection;
 
     let intervals = [];
@@ -633,7 +775,7 @@ export const timelineIntervalsSelector = createSelector(
 
     if (minDate && maxDate && filteredItemsInDateRange.length) {
       const numDays = Math.max(differenceInDays(maxDate, minDate), 1);
-      const intervalCount = Math.min(numDays, MAX_INTERVAL_COUNT); // cannot be 0
+      const intervalCount = Math.min(numDays, MAX_INTERVAL_COUNT)/2; // cannot be 0
 
       const intervalMap = createIntervalMap(minDate, maxDate, intervalCount);
       const getNextIntervalForDate = generateNextIntervalFunc(intervalMap, intervalCount);
@@ -657,6 +799,7 @@ export const timelineIntervalsSelector = createSelector(
     const intervalsWithItems = intervals.filter(({ items }) => items.length); // has items
 
     if (intervalsWithItems.length) {
+
       const itemCounts = intervalsWithItems.map(({ items }) => items.length);
       const totalItemCount = itemCounts.reduce((acc, count) => acc + count, 0);
       const meanCountPerInterval = totalItemCount / itemCounts.length;
@@ -667,6 +810,7 @@ export const timelineIntervalsSelector = createSelector(
 
       // inject z score, and markedItems -- mutates intervalMap:
       intervalsWithItems.forEach((interval) => {
+        interval.typeItems = interval.items.filter(function(obj) { return byType.indexOf(obj) != -1; });
         const cardinality = interval.items.length;
         // eslint-disable-next-line no-param-reassign
         interval.zScore = !populationSD ? 0 : (cardinality - meanCountPerInterval) / populationSD;
@@ -704,6 +848,9 @@ export const timelineIntervalsSelector = createSelector(
 
         // eslint-disable-next-line no-param-reassign
         interval.collectionItems = interval.items.filter((id) => records[id]?.saved);
+
+        interval.typeCollectionItems = interval.typeItems.filter(value => interval.collectionItems.includes(value))
+
       });
     }
 
@@ -723,6 +870,7 @@ export const timelineIntervalsSelector = createSelector(
     };
   },
 );
+
 
 export const recordNotesSelector = createSelector(
   [activeCollectionSelector, (_, ownProps) => ownProps],

@@ -17,14 +17,14 @@ const DataRow = ({
     </Text>
     <Text style={[
       styles.date,
-      isHeadingRow ? styles.heading : null,
+      isHeadingRow ? styles.subHeading : null,
     ]}
     >
       {oldest}
     </Text>
     <Text style={[
       styles.date,
-      isHeadingRow ? styles.heading : null,
+      isHeadingRow ? styles.subHeading : null,
     ]}
     >
       {latest}
@@ -67,10 +67,15 @@ const styles = StyleSheet.create({
   },
   label: {
     ...body1,
-    flex: 5,
+    flex: 5.5,
   },
   date: {
-    flex: 3,
+    flex: 2.2,
+    ...body1,
+  },
+  subHeading: {
+
+    color: Colors.darkgrey2,
     ...body1,
   },
 });

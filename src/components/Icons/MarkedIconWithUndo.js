@@ -38,9 +38,7 @@ const MarkedIconWithUndo = ({
   const handlePress = () => {
     if (isAccordion) { // could be one or more resourceId:
       if(markedOrFocusedCount != 0 || previousResourceIds.length === 0 || previousResourceIds.length === resourceIds.length){
-        console.log(markedOrFocusedCount)
-        console.log(previousResourceIds)
-        console.log(resourceIds)
+
 
       const resourceIdsMap = resourceIds.reduce((acc, id) => ({
         ...acc,
@@ -50,7 +48,6 @@ const MarkedIconWithUndo = ({
 
       updateMarkedResources(newSubType, resourceIdsMap, collectionId);
     } else {
-      console.log("Running")
       const resourceIdsMap = previousResourceIds.reduce((acc, id) => ({
         ...acc,
         [id]: (markedOrFocusedCount === resourceIds.length ? UNMARKED : FOCUSED),

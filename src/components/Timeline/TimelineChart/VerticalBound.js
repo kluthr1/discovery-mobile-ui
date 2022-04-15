@@ -23,6 +23,7 @@ const VerticalBound = ({
         strokeWidth="1"
         vectorEffect="non-scaling-stroke"
       />
+
       <SvgText
         fill={config.LABEL_COLOR}
         stroke="none"
@@ -41,5 +42,8 @@ VerticalBound.propTypes = {
   availableWidth: number.isRequired,
   countForMaxBarHeight: number.isRequired,
 };
+
+
+
 
 export default VerticalBound;

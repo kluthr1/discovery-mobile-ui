@@ -8,6 +8,7 @@ import {
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { Text } from 'native-base';
 import { connect } from 'react-redux';
+import { Entypo, Feather, MaterialCommunityIcons } from '@expo/vector-icons'; // eslint-disable-line import/no-extraneous-dependencies
 
 import Colors from '../../constants/Colors';
 import { selectResourceType } from '../../redux/action-creators';
@@ -39,6 +40,8 @@ CategoryButton.defaultProps = {
 };
 
 const ResourceTypePicker = ({
+  handleOpenDrawer,
+  noRecords,
   allTypeFilters,
   selectResourceTypeAction,
   selectedResourceType,
@@ -63,8 +66,29 @@ const ResourceTypePicker = ({
 
 
   return (
-  <View>
-    <ScrollView
+  <View style = {styles.resourcePickerContainer}>
+
+    <TouchableOpacity
+      style={styles.drawerIcon}
+      onPress={handleOpenDrawer}
+    >
+      <MaterialCommunityIcons
+        name="filter-outline"
+        size={30}
+        color={"white"}
+      />
+    </TouchableOpacity>
+    {noRecords &&
+      <View style={styles.zeroStateContainer}>
+        <Text style={styles.zeroStateText}>
+          no Records found
+        </Text>
+      </View>
+
+    }
+    <View>
+
+    {!noRecords && <ScrollView
       style={styles.root}
       horizontal
       showsHorizontalScrollIndicator={false}
@@ -87,11 +111,16 @@ const ResourceTypePicker = ({
             />
           ))
       }
-    </ScrollView>
+    </ScrollView>}
+
   </View>
+  </View>
+
 )};
 
 ResourceTypePicker.propTypes = {
+  handleOpenDrawer: func,
+
   allTypeFilters: arrayOf(shape({
     type: string.isRequired,
     typeIsEnabled: bool.isRequired,
@@ -103,6 +132,8 @@ ResourceTypePicker.propTypes = {
 
 ResourceTypePicker.defaultProps = {
   selectedResourceType: null,
+  handleOpenDrawer: null,
+
 };
 
 const mapStateToProps = (state) => ({
@@ -145,6 +176,35 @@ const styles = StyleSheet.create({
     zIndex:-1
 
   },
+  resourcePickerContainer:{
+    zIndex:-1,
+    flexDirection: "row",
+    backgroundColor:Colors.primary,
+
+  },
+  resourcePickerWidth:{
+    width:"90%",
+  },
+  drawerIcon: {
+    paddingLeft: 5,
+    marginRight:0,
+    paddingTop:7,
+  },
+  zeroStateContainer: {
+    flex: 1,
+    width:"100%",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    zIndex:-1,
+    height: 45,
+  },
+  zeroStateText: {
+    paddingTop:12,
+    textAlign: 'center',
+    color: 'white',
+
+  },
+
 });
 
 const textStyles = StyleSheet.create({
@@ -166,4 +226,5 @@ const textStyles = StyleSheet.create({
     zIndex:-1
 
   },
+
 });

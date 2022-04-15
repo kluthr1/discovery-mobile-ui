@@ -35,6 +35,7 @@ export default {
   lightgrey3: gray7,
   mediumgrey: gray2,
   darkgrey: gray3,
+
   darkgrey2: gray6,
   baseText: gray3,
   divider: gray1,

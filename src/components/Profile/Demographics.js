@@ -57,6 +57,15 @@ const Demographics = ({
         <Text style={styles.headingText}>
           Demographics
         </Text>
+        <View
+          style={{
+            borderBottomWidth: 2.5,
+            borderColor: Colors.primary,
+            marginTop:3
+
+          }}
+        />
+
       </View>
       <SectionList
         sections={demographics}
@@ -90,7 +99,7 @@ const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Demographics);
 
-const { h6, body1 } = TextStyles;
+const {  h6, body1 } = TextStyles;
 
 const styles = StyleSheet.create({
   root: {
@@ -99,7 +108,6 @@ const styles = StyleSheet.create({
   headingContainer: {
     paddingHorizontal: 16,
     paddingVertical: 4,
-    backgroundColor: Colors.primaryLight,
   },
   headingText: {
     color: 'black',

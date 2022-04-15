@@ -12,7 +12,7 @@ import { prebuiltCollectionsSelector, collectionsCounterSelector } from '../redu
 import HeaderCountIcon from '../components/Icons/HeaderCountIcon';
 import Colors from '../constants/Colors';
 
-const UpdatesScreen = ({ navigation, collections, collectionsCounter }) => {
+const SearchScreen = ({ navigation, collections, collectionsCounter }) => {
   const [title, onChangeTitle] = useState('');
   const [validReports, setValidReports] = useState(collections)
   Object.size = function (obj) {
@@ -75,22 +75,12 @@ const UpdatesScreen = ({ navigation, collections, collectionsCounter }) => {
       </View>
     </View>
     <View style={(! title.length == 0 )? styles.numResultsView : { display: 'none' }}>
-      <Text style={styles.dash}>{ Object.size(validReports)}</Text>
-    </View>
-    <View style={styles.collectionRowContainer}>
-      {Object.entries(validReports).map(([id, { label }]) => (
-        <CollectionRow
-          key={id}
-          collectionId={id}
-          label={label}
-          navigation={navigation}
-        />
-      ))}
+
     </View>
   </SafeAreaView>
 )};
 
-UpdatesScreen.propTypes = {
+SearchScreen.propTypes = {
   navigation: shape({}).isRequired,
   collections: shape({}).isRequired,
   collectionsCounter: shape({}).isRequired,

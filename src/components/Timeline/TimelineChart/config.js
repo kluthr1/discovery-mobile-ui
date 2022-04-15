@@ -9,7 +9,7 @@ export const MARKED_RADIUS = BAR_WIDTH / 2;
 
 export const VARIANCE_THRESHOLD = 30;
 
-export const BOUNDARY_LINE_COLOR = '#36c';
+export const BOUNDARY_LINE_COLOR = '#333'; //#36c
 
 export const BAR_COLOR = Colors.logoBlue;
 export const COLOR_1SD = '#999'; // also ccc in mocks

@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity , Text} from 'react-native';
 import { connect } from 'react-redux';
 
 import {
   bool, shape, string, arrayOf, func,
 } from 'prop-types';
+import { Ionicons, Feather } from '@expo/vector-icons'; // eslint-disable-line import/no-extraneous-dependencies
+
 import NotesList from '../Notes/NotesList';
 import { recordNotesSelector } from '../../redux/selectors';
 import ResourceCardNoteActions from './ResourceCardNoteActions';
+import Colors from '../../constants/Colors';
 
 const ResourceCardNotes = ({
   fromNotesScreen,
@@ -18,9 +21,24 @@ const ResourceCardNotes = ({
 }) => {
   const [showNotes, setShowNotes] = useState(false);
   const hasNotes = recordNotes.length > 0;
+  const [showDetails, setShowDetails] = useState(false);
 
   return (
     <View>
+      <TouchableOpacity style={styles.collectionRow}>
+        <View style={styles.collectionRowCountIconsContainer}>
+        <TouchableOpacity style={styles.infoIcon} onPress={() => setShowDetails(!showDetails)}>
+          <Ionicons
+            name={showDetails ? 'chevron-up' : 'chevron-down'}
+            size={24}
+            color={Colors.expandTimeline}
+          />
+        </TouchableOpacity>
+          <Text style={styles.labelText}>{"Record Notes"}</Text>
+        </View>
+        <View style={styles.iconContainer}>
+        </View>
+      </TouchableOpacity>
       {!fromNotesScreen
         && (
           <View style={styles.noteActionsContainer}>

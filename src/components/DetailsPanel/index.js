@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState} from 'react';
 import {
   StyleSheet, View, SafeAreaView, TouchableOpacity, ScrollView, Text,
 } from 'react-native';
@@ -23,6 +23,7 @@ import SubTypeAccordionsContainer from '../SubTypeAccordionsContainer';
 import TimeSavedAccordionsContainer from '../TimeSavedAccordionsContainer';
 import HeaderCountIcon from '../Icons/HeaderCountIcon';
 import TextStyles from '../../constants/TextStyles';
+import CollectionsDialog, { COLLECTIONS_DIALOG_ACTIONS, CollectionsDialogText } from '../Dialog/CollectionsDialog';
 
 const DetailsPanel = ({
   navigation, collection, savedRecordsGroupedByType, savedRecords,
@@ -63,6 +64,7 @@ const DetailsPanel = ({
         return null;
     }
   };
+  const [collectionsDialogText, setCollectionsDialogText] = useState();
 
   return (
     <SafeAreaView style={styles.root}>
@@ -72,10 +74,21 @@ const DetailsPanel = ({
             <Entypo name="chevron-thin-left" size={20} color={Colors.headerIcon} />
           </TouchableOpacity>
         </Left>
-        <View style={styles.headerTitleContainer}>
+        <TouchableOpacity style={styles.headerTitleContainer}
+          onPress={()=>
+            setCollectionsDialogText(CollectionsDialogText[COLLECTIONS_DIALOG_ACTIONS.RENAME])}>
           {savedItemsCount > 0 && <HeaderCountIcon count={savedItemsCount} outline />}
+          {collectionsDialogText && (
+          <CollectionsDialog
+            collectionId={collection.id}
+            collectionLabel={collection?.label}
+
+            collectionsDialogText={collectionsDialogText}
+            setCollectionsDialogText={setCollectionsDialogText}
+          />
+          )}
           <Title style={styles.headerText}>{collection?.label}</Title>
-        </View>
+        </TouchableOpacity>
         <Right>
           <TouchableOpacity onPress={handlePressNoteIcon}>
             <FontAwesome name="sticky-note-o" size={20} color={Colors.headerIcon} />

@@ -65,12 +65,11 @@ const { body1 } = TextStyles;
 const styles = StyleSheet.create({
   root: {
     alignItems: 'center',
-    margin: 6,
-    marginTop: 24,
-    padding: 8,
+    margin: 3,
+    marginTop: 20,
     justifyContent: 'center',
     backgroundColor: 'white',
-    borderWidth: 1,
+    borderWidth: 0,
     borderRadius: 6,
     borderColor: Colors.primary,
   },

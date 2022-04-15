@@ -52,8 +52,15 @@ const Data = ({
         <Text style={styles.headingText}>
           Data
         </Text>
+        <View
+          style={{
+            borderBottomWidth: 2.5,
+            borderColor: Colors.primary,
+            marginTop:3
+          }}
+        />
       </View>
-      <SectionList
+    {/*  <SectionList
         sections={demographics}
         keyExtractor={(item, index) => item + index}
         renderSectionHeader={({ section: { title } }) => (
@@ -64,7 +71,7 @@ const Data = ({
             title={item}
           />
         )}
-      />
+      />*/}
     </View>
   );
 };
@@ -103,7 +110,6 @@ const styles = StyleSheet.create({
   headingContainer: {
     paddingHorizontal: 16,
     paddingVertical: 4,
-    backgroundColor: Colors.primaryLight,
   },
   headingText: {
     color: 'black',

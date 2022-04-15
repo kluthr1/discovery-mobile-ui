@@ -314,7 +314,6 @@ export const AutocompleteDropdown = memo(
 
     const onSubmit = useCallback(
       (e) => {
-        console.log("blurring")
 
         inputRef.current.blur()
         setOpenSuggestions(false)
@@ -329,7 +328,6 @@ export const AutocompleteDropdown = memo(
       },
       [props.closeOnSubmit, props.onSubmit]
     )
-    console.log(props.collectionId)
 
     return (
       <View

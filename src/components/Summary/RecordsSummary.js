@@ -15,7 +15,7 @@ import {
 } from '../../redux/selectors';
 import RecordCount from './RecordCount';
 import DataRow from './DataRow';
-import { formatDateShortYear } from '../../resources/fhirReader';
+import { formatDateShortYearNoDate } from '../../resources/fhirReader';
 
 const RecordsSummary = ({ recordsByType }) => (
   <View style={styles.root}>
@@ -38,8 +38,8 @@ const RecordsSummary = ({ recordsByType }) => (
             key={type}
             count={String(items.length)}
             label={label}
-            oldest={formatDateShortYear(items[0]?.timelineDate)}
-            latest={formatDateShortYear(items[items.length - 1]?.timelineDate)}
+            oldest={formatDateShortYearNoDate(items[0]?.timelineDate)}
+            latest={formatDateShortYearNoDate(items[items.length - 1]?.timelineDate)}
           />
         ))}
       </View>
@@ -85,4 +85,5 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 10,
   },
+
 });

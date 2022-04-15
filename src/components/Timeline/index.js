@@ -9,40 +9,41 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; // eslint
 import DateRangePicker from './DateRangePicker';
 import TimelineChart from './TimelineChart';
 import Colors from '../../constants/Colors';
+import SetDateFilter from './SetDateFilters';
 
 const Timeline = ({ handleOpenDrawer, noRecords }) => {
   const [showTimeline, setShowTimeline] = useState(true);
 
   return (
     <View style={styles.root}>
+
       <View style={styles.dateRangeContainer}>
         <Left>
+        </Left>
+          <DateRangePicker />
+        <Right>
+        {!noRecords && (
           <TouchableOpacity
-            style={styles.drawerIcon}
-            onPress={handleOpenDrawer}
+            style={styles.expandIcon}
+            onPress={() => setShowTimeline(!showTimeline)}
           >
-            <MaterialCommunityIcons
-              name="filter-outline"
+            <Ionicons
+              name={showTimeline ? 'chevron-up' : 'chevron-down'}
               size={24}
-              color={Colors.primary}
+              color={Colors.expandTimeline}
             />
           </TouchableOpacity>
-        </Left>
-        <DateRangePicker />
-        <Right>
-          {!noRecords && (
-            <TouchableOpacity
-              style={styles.expandIcon}
-              onPress={() => setShowTimeline(!showTimeline)}
-            >
-              <Ionicons
-                name={showTimeline ? 'chevron-up' : 'chevron-down'}
-                size={24}
-                color={Colors.expandTimeline}
-              />
-            </TouchableOpacity>
-          )}
+        )}
         </Right>
+      </View>
+      <View style={styles.setDateRow}>
+
+          <View style={styles.setDateContainer}>
+
+          <SetDateFilter />
+          </View>
+
+
       </View>
       {showTimeline && !noRecords && <TimelineChart />}
     </View>
@@ -71,6 +72,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 8,
+    paddingTop:5
+
+  },
+  setDateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+    paddingTop:5
+
   },
   drawerIcon: {
     paddingLeft: 8,
@@ -80,4 +90,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
+  setDateContainer: {
+    width:"100%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 0,
+    marginBottom:10,
+
+  }
+
 });
