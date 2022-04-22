@@ -14,6 +14,7 @@ import { PLURAL_RESOURCE_TYPES, SINGULAR_RESOURCE_TYPES } from '../../constants/
 import { formatDate } from '../../resources/fhirReader';
 import { FOCUSED } from '../../constants/marked-status';
 import { SORT_DESC, sortFields } from '../../constants/sorting';
+import {isAddingNewCollection} from '../action-creators'
 
 const resourcesSelector = (state) => state.resources;
 
@@ -42,7 +43,10 @@ export const prebuiltCollectionsSelector = (state) => Object.entries(state.colle
     return acc;
   }, {});
 
+
+
 export const activeCollectionIdSelector = (state) => state.activeCollectionId;
+export const globalSearchTermSelector = (state) => state.globalSearchTerm;
 export const creatingCollectionSelector = (state) => state.creatingCollection;
 
 export const collectionByIdSelector = createSelector(
@@ -58,7 +62,7 @@ export const activeCollectionSelector = createSelector(
 export const activeCollectionResourceTypeSelector = createSelector(
   [activeCollectionSelector],
   (activeCollection) => activeCollection.selectedResourceType,
-  
+
 );
 
 export const activeCollectionResourceTypeFiltersSelector = createSelector(
@@ -99,8 +103,8 @@ function validSearchFilter(subType, filter){
    }
   }
   return true;
-
 }
+
 
 
 export const activeCollectionMarkedResourcesSelector = createSelector(
@@ -347,6 +351,20 @@ const allRecordsWithFilterResponseSelector = createSelector(
     }));
   },
 );
+
+
+export const searchOnlyAllRecordsSelector = createSelector(
+  [allRecordsWithFilterResponseSelector],
+  (items) => items.filter(({
+    passesFilters: {
+      subTypeString
+
+    },
+  }) => subTypeString),
+);
+
+
+
 
 // is there a record with all filters applied, other than showCollectionOnly?
 export const hasAnyCollectionRecordInScope = createSelector(

@@ -356,6 +356,7 @@ export const collectionsReducer = (state = preloadCollections, action) => {
 
       });
     }
+
     case actionTypes.UPDATE_MARKED_RESOURCES: {
       const { subType, resourceIdsMap } = action.payload;
 
@@ -379,7 +380,7 @@ export const collectionsReducer = (state = preloadCollections, action) => {
           });
       });
     }
-  
+
     case actionTypes.CLEAR_MARKED_RESOURCES: {
       return produce(state, (draft) => {
         Object.values(draft[collectionId].records).forEach((attributes) => {
@@ -574,6 +575,17 @@ export const activeCollectionIdReducer = (state = null, action) => {
 export const isCreatingNewCollectionReducer = (state = false, action) => {
   switch (action.type) {
     case actionTypes.ADDING_NEW_COLLECTION: {
+      return action.payload;
+    }
+
+    default:
+      return state;
+  }
+};
+
+export const globalSearchTermReducer = (state = false, action) => {
+  switch (action.type) {
+    case actionTypes.UPDATE_GLOBAL_SEARCH: {
       return action.payload;
     }
 

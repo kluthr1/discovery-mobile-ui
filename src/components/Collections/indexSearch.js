@@ -23,30 +23,6 @@ const CollectionsIndexSearch = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  /* var itemsList =
-    [
-
-    ]
-  var itemNames = []
-  var collectionNames = []
-  if (Object.keys(collections).length > 0){
-    for (const [key, value] of Object.entries(collections)) {
-
-      if (collections[key] != null){
-      collectionNames.push(collections[key].label);
-      for (var j = 0; j < collections[key].tags.length; j++) {
-        if (!itemNames.includes(collections[key].tags[j])) {
-          itemNames.push(collections[key].tags[j])
-        }
-      }
-    }
-    }
-  }
-
-  for (var i in itemNames) {
-    itemsList.push({label: itemNames[i], value: itemNames[i]})
-  } */
-  // const [items, setItems] = useState(itemsList);
   const [items, setItems] = useState([]);
   const [value, setValue] = useState([]);
   const [current, currentSelection] = useState(false);
@@ -143,24 +119,7 @@ const CollectionsIndexSearch = ({
           </Text>
         </>,
       );
-      /*threeLineSearchText.push(
-        <>
-          <View style={styles.threeLineSummary}>
-            <Text style={{ fontWeight: 'bold', marginLeft: -3, padding: 0 }}>
-              {' '}
-              {'phrase: '}
-            </Text>
-            <Text style={{ padding: 0 }}>
-              {' '}
-              {`${title}; `}
-            </Text>
-            <Text style={{ padding: 0 }}>
-              {' '}
-              {}
-            </Text>
-          </View>
-        </>,
-      );*/
+
     }
 
     if (value.length > 0) {
@@ -359,40 +318,13 @@ const CollectionsIndexSearch = ({
           </View>
 
 
-            {//<TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
-              //<View><Text style={styles.dash}>Search Collections</Text></View></TouchableOpacity>
-            }
+
         </View>
       </View>
-      {/* </TouchableOpacity> */}
 
-      {showSearch
-
-    && (
+      {showSearch && (
     <KeyboardAvoidingView style={[styles.searchItemsDiv, styles.zindex]}>
 
-      {/*<View style={styles.searchBoxDiv}>
-
-        <View style={styles.textInputContainer}>
-
-          <TextInput
-            onTouchStart={() => setOpen(false)}
-            style={styles.textInput}
-            value={title}
-            onChangeText={onChangeTitle}
-            placeholder="search Collections' names and purposes"
-            placeholderTextColor="#777777"
-            autoFocus
-          />
-        </View>
-      </View>*/}
-
-      { // <View style={styles.dropDown}>
-        // <Text style={styles.dropDowntextInstructions}>Specify tags
-        // that Collections must include</Text>
-
-        // </View>
-      }
 
       <Picker
         multiple

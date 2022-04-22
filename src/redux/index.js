@@ -10,6 +10,7 @@ import {
   collectionsReducer,
   activeCollectionIdReducer,
   isCreatingNewCollectionReducer,
+  globalSearchTermReducer,
 
 } from './reducers';
 import rootEpic from './epics';
@@ -28,13 +29,14 @@ const createStore = (patientId) => {
     activeCollectionId: activeCollectionIdReducer,
     collections: collectionsReducer,
     creatingCollection: isCreatingNewCollectionReducer,
+    globalSearchTerm: globalSearchTermReducer
   });
 
   const persistReducerConfig = {
     version: '0.1.0',
     key: `root-${patientId}`,
     storage: AsyncStorage,
-    whitelist: ['activeCollectionId', 'collections', 'creatingCollection'],
+    whitelist: ['activeCollectionId', 'collections', 'creatingCollection', 'globalSearchTerm'],
   };
 
   const store = configureStore({

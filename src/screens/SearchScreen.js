@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, SafeAreaView, TextInput, Text} from 'react-native';
+import { StyleSheet, View, SafeAreaView, TextInput, Text,
+          TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { shape } from 'prop-types';
 import {
@@ -8,55 +9,35 @@ import {
 import { Feather } from '@expo/vector-icons';
 
 import CollectionRow from '../components/CollectionRow/CollectionRow';
-import { prebuiltCollectionsSelector, collectionsCounterSelector } from '../redux/selectors';
+import { customCollectionsSelector, prebuiltCollectionsSelector,
+  collectionsCounterSelector, searchOnlyAllRecordsSelector,
+  globalSearchTermSelector} from '../redux/selectors';
 import HeaderCountIcon from '../components/Icons/HeaderCountIcon';
 import Colors from '../constants/Colors';
+import { updateSearchTerm, updateGlobalSearch } from '../redux/action-creators';
+import BaseAccordion from '../components/Generic/BaseAccordion';
 
-const SearchScreen = ({ navigation, collections, collectionsCounter }) => {
-  const [title, onChangeTitle] = useState('');
-  const [validReports, setValidReports] = useState(collections)
-  Object.size = function (obj) {
-    let size = 0;
-    Object.keys(obj).forEach(() => {
-      size += 1;
-    });
-    if (size === 1) {
-      return ('1 Result');
-    }
-    return (`${size.toString()} Results`);
-  };
+const SearchScreen = ({ navigation, collections, reports, records, collectionsCounter,
+  searchTermFilter, globalSearchUpdate,searchTerm
+ }) => {
+  const [title, onChangeTitle] = useState(searchTerm);
+  const [collectionsList, editCollectionsList] = useState(collections);
+  const [reportsList, editreportsList] = useState(reports);
   useEffect(() => {
-    const newCollectionsList = {};
-    const itemsList = [];
-    const itemNames = [];
-    const collectionNames = [];
-    if (Object.keys(collections).length > 0) {
-      Object.keys(collections).forEach((key) => {
-        if (collections[key] != null && title != null) {
-            var words = title.toLowerCase().split(' ');
-            var to_add = true
-            for (var word in words){
-              if(!collections[key].label.toLowerCase().includes(words[word])){
-                to_add = false
-              }
-            }
-            if (to_add){
-              newCollectionsList[key] = collections[key]
-            }
-        }
-      });
-    }
+    searchTermFilter(title);
+    globalSearchUpdate(title)
+    console.log(searchTerm)
+  }, [title]);
 
-    setValidReports(newCollectionsList);
-  }, [title, collections]);
+
   return (
   <SafeAreaView style={styles.safeAreaView}>
     <Header style={styles.header}>
       <View style={styles.headerTitleContainer}>
-        {collectionsCounter.preBuiltCount > 0 && (
+        {/*collectionsCounter.preBuiltCount > 0 && (
         <HeaderCountIcon count={collectionsCounter.preBuiltCount} />
-        )}
-        <Title style={styles.headerText}>Reports</Title>
+      )*/}
+        <Title style={styles.headerText}>Search</Title>
       </View>
     </Header>
     <View style ={styles.borderPadding} >
@@ -75,7 +56,39 @@ const SearchScreen = ({ navigation, collections, collectionsCounter }) => {
       </View>
     </View>
     <View style={(! title.length == 0 )? styles.numResultsView : { display: 'none' }}>
+    <TouchableWithoutFeedback>
+      <ScrollView
+        contentContainerStyle={styles.collectionRowContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+      <Text>
 
+      </Text>
+      {Object.entries(records).map(([id, { subType }]) => (
+        <Text>{subType}</Text>
+      ))}
+
+       <Text>{"Collections"}</Text>
+
+        {Object.entries(collectionsList).map(([id, { label }]) => (
+          <CollectionRow
+            key={id}
+            collectionId={id}
+            label={label}
+            navigation={navigation}
+          />
+        ))}
+        <Text>{"Reports"}</Text>
+        {Object.entries(reportsList).map(([id, { label }]) => (
+          <CollectionRow
+            key={id}
+            collectionId={id}
+            label={label}
+            navigation={navigation}
+          />
+        ))}
+      </ScrollView>
+    </TouchableWithoutFeedback>
     </View>
   </SafeAreaView>
 )};
@@ -83,15 +96,25 @@ const SearchScreen = ({ navigation, collections, collectionsCounter }) => {
 SearchScreen.propTypes = {
   navigation: shape({}).isRequired,
   collections: shape({}).isRequired,
+  reports: shape({}).isRequired,
+  records: shape({}).isRequired,
   collectionsCounter: shape({}).isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  collections: prebuiltCollectionsSelector(state),
+  collections: customCollectionsSelector(state),
+  reports:  prebuiltCollectionsSelector(state),
+  records: searchOnlyAllRecordsSelector(state),
   collectionsCounter: collectionsCounterSelector(state),
-});
+  searchTerm: globalSearchTermSelector(state)
 
-export default connect(mapStateToProps, null)(UpdatesScreen);
+});
+const mapDispatchToProps = {
+  searchTermFilter: updateSearchTerm,
+  globalSearchUpdate: updateGlobalSearch
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchScreen);
 
 const styles = StyleSheet.create({
   safeAreaView: {

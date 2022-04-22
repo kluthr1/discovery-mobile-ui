@@ -5,6 +5,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; // eslint
 
 import ProfileScreen from '../screens/ProfileScreen';
 import SummaryScreen from '../screens/SummaryScreen';
+import SearchScreen from '../screens/SearchScreen';
 import CatalogScreen from '../screens/CatalogScreen';
 import UpdatesScreen from '../screens/UpdatesScreen';
 import CollectionsListScreen from '../screens/CollectionsListScreen';
@@ -22,8 +23,8 @@ function selectIconName(name, focused) {
   switch (name) {
     case 'Profile':
       return focused ? 'md-person-sharp' : 'md-person-outline';
-    case 'Summary':
-      return focused ? 'md-grid-sharp' : 'md-grid-outline';
+    case 'Search':
+      return focused ? 'search-sharp' : 'search-outline';
     case 'Collections':
       return focused ? 'albums' : 'albums-outline';
     case 'Reports':
@@ -101,7 +102,7 @@ const AuthorizedNavigator = () => (
       }}
     >
       <HomeTab.Screen name="Profile" component={ProfileScreen} />
-      <HomeTab.Screen name="Summary" component={SummaryScreen} />
+      <HomeTab.Screen name="Search" component={SearchScreen} />
       <HomeTab.Screen name="Reports" component={UpdatesScreen} />
       <HomeTab.Screen name="Collections" component={CollectionStackScreen} />
     </HomeTab.Navigator>

@@ -44,6 +44,7 @@ export const updateSearchTerm = (term) => (dispatch, getState) => {
   });
 };
 
+
 export const addResourceToCollection = (collectionId, resourceIds) => {
   const payloadIds = Array.isArray(resourceIds) ? resourceIds : [resourceIds];
   return ({
@@ -216,4 +217,9 @@ export const editCollectionDetails = (purpose, tags, current, urgent) => (dispat
 export const isAddingNewCollection = (creatingCollectionHolder) => ({
   type: actionTypes.ADDING_NEW_COLLECTION,
   payload: creatingCollectionHolder,
+});
+
+export const updateGlobalSearch = (searchTermHolder) => ({
+  type: actionTypes.UPDATE_GLOBAL_SEARCH,
+  payload: searchTermHolder,
 });
