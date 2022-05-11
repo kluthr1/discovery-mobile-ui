@@ -4,13 +4,15 @@ import {
 } from 'react-native';
 import { shape, arrayOf, bool } from 'prop-types';
 
-import BaseAccordion from '../Generic/BaseAccordion';
+import SearchAccordion from './SearchAccordion';
 import { PLURAL_RESOURCE_TYPES } from '../../constants/resource-types';
 
-const SubTypeAccordionsContainer = ({ data, fromDetailsPanel, fromDateAccordion }) => (
+const SearchAccordionsContainer = ({ data, fromDetailsPanel, fromDateAccordion }) => {
+
+
+  return(
   <View>
     { data.map(({ type, subTypes }, index) => {
-
       const firstGroupStyle = index === 0 ? styles.firstGroupContainer : {};
       return (
         <View key={type} style={[styles.groupContainer, firstGroupStyle]}>
@@ -31,7 +33,7 @@ const SubTypeAccordionsContainer = ({ data, fromDetailsPanel, fromDateAccordion 
           <View style={styles.root}>
             <View style={styles.container}>
               {subTypes.map(({ subType, recordIds }) => (
-                <BaseAccordion
+                <SearchAccordion
                   key={subType}
                   headerLabel={subType}
                   resourceIds={recordIds}
@@ -40,26 +42,27 @@ const SubTypeAccordionsContainer = ({ data, fromDetailsPanel, fromDateAccordion 
                   fromDateAccordion={fromDateAccordion}
                 />
               ))}
+
             </View>
           </View>
         </View>
       );
     })}
   </View>
-);
+)};
 
-SubTypeAccordionsContainer.propTypes = {
+SearchAccordionsContainer.propTypes = {
   data: arrayOf(shape({})).isRequired,
   fromDetailsPanel: bool,
   fromDateAccordion: bool,
 };
 
-SubTypeAccordionsContainer.defaultProps = {
+SearchAccordionsContainer.defaultProps = {
   fromDetailsPanel: false,
   fromDateAccordion: false,
 };
 
-export default SubTypeAccordionsContainer;
+export default SearchAccordionsContainer;
 
 const styles = StyleSheet.create({
   root: {
@@ -79,6 +82,7 @@ const styles = StyleSheet.create({
   typeTextContainer: {
     marginLeft: 5,
     alignItems: 'flex-start',
+    paddingLeft:1,
   },
   typeText: {
     fontWeight: '700',

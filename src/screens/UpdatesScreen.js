@@ -8,11 +8,15 @@ import {
 import { Feather } from '@expo/vector-icons';
 
 import CollectionRow from '../components/CollectionRow/CollectionRow';
-import { prebuiltCollectionsSelector, collectionsCounterSelector } from '../redux/selectors';
+import { prebuiltCollectionsSelector, collectionsCounterSelector, reportsFilteredByReportsSearch,
+reportsSearchTermSelector } from '../redux/selectors';
+import { updateReportsSearch } from '../redux/action-creators';
+
 import HeaderCountIcon from '../components/Icons/HeaderCountIcon';
 import Colors from '../constants/Colors';
 
-const UpdatesScreen = ({ navigation, collections, collectionsCounter }) => {
+const UpdatesScreen = ({ navigation, collections, collectionsCounter, reportsFiltered, reportsTerm,
+collectionsSearchUpdate}) => {
   const [title, onChangeTitle] = useState('');
   const [validReports, setValidReports] = useState(collections)
   Object.size = function (obj) {
@@ -26,11 +30,28 @@ const UpdatesScreen = ({ navigation, collections, collectionsCounter }) => {
     return (`${size.toString()} Results`);
   };
   useEffect(() => {
+    collectionsSearchUpdate(title)
+
     const newCollectionsList = {};
     const itemsList = [];
     const itemNames = [];
     const collectionNames = [];
+
+    if (title != null ){
+      if (title.length > 0){
+        setValidReports(reportsFiltered);
+
+      }else{
+        setValidReports(collections);
+
+      }
+    }else{
+      setValidReports(collections);
+
+    }
+    /*
     if (Object.keys(collections).length > 0) {
+
       Object.keys(collections).forEach((key) => {
         if (collections[key] != null && title != null) {
             var words = title.toLowerCase().split(' ');
@@ -46,8 +67,7 @@ const UpdatesScreen = ({ navigation, collections, collectionsCounter }) => {
         }
       });
     }
-
-    setValidReports(newCollectionsList);
+    */
   }, [title, collections]);
   return (
   <SafeAreaView style={styles.safeAreaView}>
@@ -94,14 +114,19 @@ UpdatesScreen.propTypes = {
   navigation: shape({}).isRequired,
   collections: shape({}).isRequired,
   collectionsCounter: shape({}).isRequired,
+  reportsFiltered: shape({}).isRequired,
+
 };
 
 const mapStateToProps = (state) => ({
   collections: prebuiltCollectionsSelector(state),
   collectionsCounter: collectionsCounterSelector(state),
+  reportsFiltered: reportsFilteredByReportsSearch(state)
 });
-
-export default connect(mapStateToProps, null)(UpdatesScreen);
+const mapDispatchToProps = {
+  collectionsSearchUpdate: updateReportsSearch
+};
+export default connect(mapStateToProps, mapDispatchToProps)(UpdatesScreen);
 
 const styles = StyleSheet.create({
   safeAreaView: {

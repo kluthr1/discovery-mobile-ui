@@ -351,9 +351,9 @@ export const collectionsReducer = (state = preloadCollections, action) => {
 
 
       return produce(state, (draft) => {
-
-        draft[collectionId].searchFilter = searchTerm;
-
+        if(draft[collectionId]){
+          draft[collectionId].searchFilter = searchTerm;
+        }
       });
     }
 
@@ -402,6 +402,7 @@ export const collectionsReducer = (state = preloadCollections, action) => {
     case actionTypes.DELETE_COLLECTION: {
       const newState = { ...state };
       delete newState[action.payload.collectionId];
+
       return newState;
     }
     case actionTypes.RENAME_COLLECTION: {
@@ -586,6 +587,29 @@ export const isCreatingNewCollectionReducer = (state = false, action) => {
 export const globalSearchTermReducer = (state = false, action) => {
   switch (action.type) {
     case actionTypes.UPDATE_GLOBAL_SEARCH: {
+      return action.payload;
+    }
+
+    default:
+      return state;
+  }
+};
+
+export const collectionSearchTermReducer = (state = false, action) => {
+  switch (action.type) {
+    case actionTypes.UPDATE_COLLECTION_SEARCH_TERM: {
+      return action.payload;
+    }
+
+    default:
+      return state;
+  }
+};
+
+
+export const reportsSearchTermReducer = (state = false, action) => {
+  switch (action.type) {
+    case actionTypes.UPDATE_REPORT_SEARCH_TERM: {
       return action.payload;
     }
 

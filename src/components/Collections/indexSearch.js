@@ -6,6 +6,7 @@ import {
   View, TouchableOpacity, TextInput, Text, Keyboard,
 } from 'react-native';
 import { Chip, Button } from 'react-native-paper';
+import { connect } from 'react-redux';
 
 import { shape } from 'prop-types';
 import {
@@ -13,13 +14,18 @@ import {
 } from 'native-base';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
-
+import { updateCollectionSearch } from '../../redux/action-creators';
+import { collectionsFilteredByCollectionSearch,
+collectionsSearchTermSelector} from '../../redux/selectors';
 import CollectionRow from '../CollectionRow/CollectionRow';
 import Picker from '../TagInput/TagSearchView';
 
 const CollectionsIndexSearch = ({
   navigation,
   collections,
+  collectionsSearchUpdate,
+  collectionsSearchTermFiltered,
+  collectionSearchTerm
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -28,6 +34,7 @@ const CollectionsIndexSearch = ({
   const [current, currentSelection] = useState(false);
   const [urgent, urgentSelection] = useState(false);
   const [collectionsList, editCollectionsList] = useState(collections);
+
   const [showSearch, setShowSearch] = useState(false);
   const [title, onChangeTitle] = useState('');
   const [notCurrent, setNotCurrent] = useState('');
@@ -40,6 +47,7 @@ const CollectionsIndexSearch = ({
   // console.log("HOME PAGE")
   // console.log(collectionNames);
   useEffect(() => {
+    collectionsSearchUpdate(title)
     const newCollectionsList = {};
 
     const itemsList = [
@@ -62,10 +70,17 @@ const CollectionsIndexSearch = ({
     for (let i = 0; i < itemNames.length; i += 1) {
       itemsList.push({ label: itemNames[i], value: itemNames[i] });
     }
+    var tempCollections = collections
+    if (title.length > 0){
+      tempCollections = collectionsSearchTermFiltered
+    }
+    editCollectionsList(tempCollections);
 
     setItems(itemsList);
+    /*
     Object.keys(collections).forEach((i) => {
       let toAdd = true;
+
       if (title.length > 0 && toAdd) {
 
         var words  = title.split(' ')
@@ -98,10 +113,11 @@ const CollectionsIndexSearch = ({
         newCollectionsList[i] = collections[i];
       }
     });
+    */
     const searchText = [];
     // console.log(collectionsList)
     const threeLineSearchText = [];
-    editCollectionsList(newCollectionsList);
+
     if (title.length > 0) {
       searchText.push(
         <>
@@ -439,7 +455,17 @@ CollectionsIndexSearch.propTypes = {
   collections: shape({}).isRequired,
 };
 
-export default CollectionsIndexSearch;
+const mapStateToProps = (state) => ({
+  collectionsSearchTermFiltered:collectionsFilteredByCollectionSearch(state),
+  collectionSearchTerm: collectionsSearchTermSelector(state)
+});
+
+const mapDispatchToProps = {
+  collectionsSearchUpdate: updateCollectionSearch
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CollectionsIndexSearch);
+
 
 const styles = StyleSheet.create({
   safeAreaView: {

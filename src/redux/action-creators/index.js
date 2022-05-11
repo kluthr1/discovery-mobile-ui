@@ -44,6 +44,23 @@ export const updateSearchTerm = (term) => (dispatch, getState) => {
   });
 };
 
+export const updateCollectionSearchTerm = (term) => (dispatch, getState) => {
+  return dispatch({
+    type: actionTypes.UPDATE_COLLECTION_SEARCH_TERM,
+    payload: {
+      searchTerm: term
+    },
+  });
+};
+
+export const updateReportSearchTerm = (term) => (dispatch, getState) => {
+  return dispatch({
+    type: actionTypes.UPDATE_REPORT_SEARCH_TERM,
+    payload: {
+      searchTerm: term
+    },
+  });
+};
 
 export const addResourceToCollection = (collectionId, resourceIds) => {
   const payloadIds = Array.isArray(resourceIds) ? resourceIds : [resourceIds];
@@ -221,5 +238,15 @@ export const isAddingNewCollection = (creatingCollectionHolder) => ({
 
 export const updateGlobalSearch = (searchTermHolder) => ({
   type: actionTypes.UPDATE_GLOBAL_SEARCH,
+  payload: searchTermHolder,
+});
+
+export const updateCollectionSearch = (searchTermHolder) => ({
+  type: actionTypes.UPDATE_COLLECTION_SEARCH_TERM ,
+  payload: searchTermHolder,
+});
+
+export const updateReportsSearch = (searchTermHolder) => ({
+  type: actionTypes.UPDATE_REPORT_SEARCH_TERM,
   payload: searchTermHolder,
 });

@@ -47,6 +47,9 @@ export const prebuiltCollectionsSelector = (state) => Object.entries(state.colle
 
 export const activeCollectionIdSelector = (state) => state.activeCollectionId;
 export const globalSearchTermSelector = (state) => state.globalSearchTerm;
+export const collectionsSearchTermSelector = (state) => state.collectionsSearchTerm;
+export const reportsSearchTermSelector = (state) => state.reportsSearchTerm;
+
 export const creatingCollectionSelector = (state) => state.creatingCollection;
 
 export const collectionByIdSelector = createSelector(
@@ -67,33 +70,49 @@ export const activeCollectionResourceTypeSelector = createSelector(
 
 export const activeCollectionResourceTypeFiltersSelector = createSelector(
   [activeCollectionSelector],
-  (activeCollection) => activeCollection.resourceTypeFilters,
+  (activeCollection) =>   activeCollection.resourceTypeFilters
 );
 
 export const activeCollectionDateRangeFilterSelector = createSelector(
   [activeCollectionSelector],
   (activeCollection) => {
-    const { dateRangeStart, dateRangeEnd } = activeCollection.dateRangeFilter;
-    return ({
-      dateRangeStart: dateRangeStart ? new Date(dateRangeStart) : undefined,
-      dateRangeEnd: dateRangeEnd ? new Date(dateRangeEnd) : undefined,
-    });
+    if(activeCollection){
+      const { dateRangeStart, dateRangeEnd } = activeCollection.dateRangeFilter;
+      return ({
+        dateRangeStart: dateRangeStart ? new Date(dateRangeStart) : undefined,
+        dateRangeEnd: dateRangeEnd ? new Date(dateRangeEnd) : undefined,
+      });
+    }else{
+      return ({
+        dateRangeStart:  undefined,
+        dateRangeEnd:  undefined,
+      });
+    }
   },
 );
 
 export const activeSearchFilterSelector = createSelector(
   [activeCollectionSelector],
   (activeCollection) => {
-    return ({
-      searchTerms: [activeCollection.searchFilter],
+    if(activeCollection){
+      if(activeCollection.searchFilter){
+        return ({
+          searchTerms: [activeCollection.searchFilter],
+          includeAll: true
+        });
+      }
+    }
+    return({
+      searchTerms: [""],
       includeAll: true
-    });
+    })
+
   },
 );
 
 function validSearchFilter(subType, filter){
   for(var x in filter["searchTerms"]){
-    if(filter["searchTerms"][x] != undefined){
+    if(filter["searchTerms"][x] != undefined && filter["searchTerms"][x].split != undefined){
       var words  = filter["searchTerms"][x].split(' ')
       for(var j in words){
         if(!subType.toLowerCase().includes(words[j].toLowerCase())){
@@ -313,15 +332,21 @@ const allRecordsWithFilterResponseSelector = createSelector(
     dateRangeForAllRecordsSelector,
     activeCollectionDateRangeFilterSelector,
     activeSearchFilterSelector,
+    globalSearchTermSelector,
+    collectionsSearchTermSelector,
+    reportsSearchTermSelector,
   ],
-  (items, activeCollection, dateRangeForAllRecords, activeCollectionDateRangeFilter, activeSearchFilter) => {
+  (items, activeCollection, dateRangeForAllRecords, activeCollectionDateRangeFilter, activeSearchFilter,
+    globalSearchFilter, collectionSearchFilter, reportsSearchFilter) => {
     const { minimumDate, maximumDate } = dateRangeForAllRecords;
-    const {
-      resourceTypeFilters,
-      showCollectionOnly,
-      showMarkedOnly,
-      records,
-    } = activeCollection;
+
+      const {
+        resourceTypeFilters,
+        showCollectionOnly,
+        showMarkedOnly,
+        records,
+      } = activeCollection;
+
 
     // eslint-disable-next-line max-len
     const { dateRangeStart = minimumDate, dateRangeEnd = maximumDate } = activeCollectionDateRangeFilter;
@@ -342,6 +367,22 @@ const allRecordsWithFilterResponseSelector = createSelector(
           },
         ),
         subTypeString: validSearchFilter(subType, activeSearchFilter),
+
+        globalTypeString: validSearchFilter(subType, {
+          searchTerms: [globalSearchFilter],
+          includeAll: true,
+          }
+        ),
+        collectionSearchTerm: validSearchFilter(subType, {
+          searchTerms: [collectionSearchFilter],
+          includeAll: true,
+          }
+        ),
+        reportsSearchTerm: validSearchFilter(subType, {
+          searchTerms: [reportsSearchFilter],
+          includeAll: true,
+          }
+        ),
         inCollection: records[id]?.saved,
         dateSaved: records[id]?.dateSaved,
         showCollectionOnly: !showCollectionOnly || (showCollectionOnly && records[id]?.saved),
@@ -353,18 +394,255 @@ const allRecordsWithFilterResponseSelector = createSelector(
 );
 
 
-export const searchOnlyAllRecordsSelector = createSelector(
-  [allRecordsWithFilterResponseSelector],
-  (items) => items.filter(({
-    passesFilters: {
-      subTypeString
+// returns Array of (picked fields from) _all_ records, flagged with responsiveness to each filter:
+const allRecordsWithFilterResponseSelectorSecondary = createSelector(
+  [
+    allValidRecordsSortedByDateSelector,
+    dateRangeForAllRecordsSelector,
+    activeCollectionDateRangeFilterSelector,
+    activeSearchFilterSelector,
+    globalSearchTermSelector,
+    collectionsSearchTermSelector,
+    reportsSearchTermSelector,
+  ],
+  (items, dateRangeForAllRecords, activeCollectionDateRangeFilter, activeSearchFilter,
+    globalSearchFilter, collectionSearchFilter, reportsSearchFilter) => {
+    const { minimumDate, maximumDate } = dateRangeForAllRecords;
+    return items.map(({
+      id, type, subType, timelineDate,
+    }) => ({
+      id,
+      type,
+      subType,
+      timelineDate,
+      passesFilters: {
 
-    },
-  }) => subTypeString),
+        subTypeString: validSearchFilter(subType, activeSearchFilter),
+
+        globalTypeString: validSearchFilter(subType, {
+          searchTerms: [globalSearchFilter],
+          includeAll: true,
+          }
+        ),
+        collectionSearchTerm: validSearchFilter(subType, {
+          searchTerms: [collectionSearchFilter],
+          includeAll: true,
+          }
+        ),
+        reportsSearchTerm: validSearchFilter(subType, {
+          searchTerms: [reportsSearchFilter],
+          includeAll: true,
+          }
+        ),
+      },
+    }));
+  },
 );
 
 
+export const recordsFilteredByGlobalSearch = createSelector(
+  [allRecordsWithFilterResponseSelectorSecondary],
+  (items) => items.filter(({
+    passesFilters: {
+      globalTypeString
 
+    },
+  }) =>  globalTypeString),
+);
+export const recordsFilteredByCollectionSearch = createSelector(
+  [allRecordsWithFilterResponseSelectorSecondary],
+  (items) => items.filter(({
+    passesFilters: {
+      collectionSearchTerm
+
+    },
+  }) =>  collectionSearchTerm),
+);
+export const recordsFilteredByReportsSearch = createSelector(
+  [allRecordsWithFilterResponseSelectorSecondary],
+  (items) => items.filter(({
+    passesFilters: {
+      reportsSearchTerm
+
+    },
+  }) =>  reportsSearchTerm),
+);
+export const groupedRecordsFilteredByGlobalSearch = createSelector(
+  [recordsFilteredByGlobalSearch ],
+  (items) => (sortedGroupedRecordsByType({records: items, descSortOnly: true} )),
+);
+
+
+export const collectionsFilteredByGlobalSearch = createSelector(
+  [customCollectionsSelector, globalSearchTermSelector, recordsFilteredByGlobalSearch],
+  (collections, searchTerm, globalSearchRecords) => {
+    var returnCollections = {}
+    Object.keys(collections).forEach(function(key) {
+      var toAdd = false;
+      if (searchTerm.length > 0) {
+
+        var words  = searchTerm.split(' ')
+        for(var j in words){
+          if(collections[key].label.toLowerCase().includes(words[j].toLowerCase())
+            || (collections[key].purpose.toLowerCase().includes(words[j].toLowerCase())) ){
+              toAdd = true;
+          }
+        }
+
+        if (!toAdd){
+
+          Object.keys(collections[key]["records"]).forEach(function(record) {
+
+            if (!toAdd){
+              for(var object in globalSearchRecords){
+
+                if (globalSearchRecords[object]["id"] == record){
+                  toAdd = true;
+                  returnCollections[key] = collections[key]
+
+                }
+              }
+            }
+          });
+        }
+      }
+      if (toAdd){
+        returnCollections[key] = collections[key]
+      }
+    });
+    return (returnCollections);
+  },
+);
+
+export const reportsFilteredByGlobalSearch = createSelector(
+  [prebuiltCollectionsSelector, globalSearchTermSelector, recordsFilteredByGlobalSearch],
+  (collections, searchTerm, globalSearchRecords) => {
+    var returnCollections = {}
+    Object.keys(collections).forEach(function(key) {
+      var toAdd = false;
+      if (searchTerm.length > 0) {
+
+        var words  = searchTerm.split(' ')
+        for(var j in words){
+          if(collections[key].label.toLowerCase().includes(words[j].toLowerCase())
+            || (collections[key].purpose.toLowerCase().includes(words[j].toLowerCase())) ){
+              toAdd = true;
+          }
+        }
+
+        if (!toAdd){
+
+          Object.keys(collections[key]["records"]).forEach(function(record) {
+
+              if (!toAdd ){
+                for(var object in globalSearchRecords){
+                  if (globalSearchRecords[object]["id"] == record){
+                    toAdd = true;
+                  }
+                }
+
+            }
+          });
+        }
+      }
+      if (toAdd){
+        returnCollections[key] = collections[key]
+      }
+    });
+    return (returnCollections);
+  },
+);
+
+/*export const customCollectionsSelector = (state) => Object.entries(state.collections)
+  .reduce((acc, [id, collection]) => {
+    if (!collection.preBuilt) {
+      acc[id] = collection;
+    }
+    return acc;
+  }, {});
+*/
+
+
+export const collectionsFilteredByCollectionSearch = createSelector(
+  [customCollectionsSelector, collectionsSearchTermSelector, recordsFilteredByCollectionSearch],
+  (collections, searchTerm, globalSearchRecords) => {
+    var returnCollections = {}
+    Object.keys(collections).forEach(function(key) {
+      var toAdd = false;
+      if (searchTerm.length > 0) {
+
+        var words  = searchTerm.split(' ')
+        for(var j in words){
+          if(collections[key].label.toLowerCase().includes(words[j].toLowerCase())
+            || (collections[key].purpose.toLowerCase().includes(words[j].toLowerCase())) ){
+              toAdd = true;
+          }
+        }
+
+        if (!toAdd){
+
+          Object.keys(collections[key]["records"]).forEach(function(record) {
+
+            if (!toAdd){
+              for(var object in globalSearchRecords){
+
+                if (globalSearchRecords[object]["id"] == record){
+                  toAdd = true;
+                  returnCollections[key] = collections[key]
+
+                }
+              }
+            }
+          });
+        }
+      }
+      if (toAdd){
+        returnCollections[key] = collections[key]
+      }
+    });
+    return (returnCollections);
+  },
+);
+
+
+export const reportsFilteredByReportsSearch = createSelector(
+  [prebuiltCollectionsSelector, reportsSearchTermSelector, recordsFilteredByReportsSearch],
+  (collections, searchTerm, globalSearchRecords) => {
+    var returnCollections = {}
+    Object.keys(collections).forEach(function(key) {
+      var toAdd = false;
+      if (searchTerm.length > 0) {
+
+        var words  = searchTerm.split(' ')
+        for(var j in words){
+          if(collections[key].label.toLowerCase().includes(words[j].toLowerCase())
+            || (collections[key].purpose.toLowerCase().includes(words[j].toLowerCase())) ){
+              toAdd = true;
+          }
+        }
+
+        if (!toAdd){
+
+          Object.keys(collections[key]["records"]).forEach(function(record) {
+
+              if (!toAdd ){
+                for(var object in globalSearchRecords){
+                  if (globalSearchRecords[object]["id"] == record){
+                    toAdd = true;
+                  }
+                }
+
+            }
+          });
+        }
+      }
+      if (toAdd){
+        returnCollections[key] = collections[key]
+      }
+    });
+    return (returnCollections);
+  },
+);
 
 // is there a record with all filters applied, other than showCollectionOnly?
 export const hasAnyCollectionRecordInScope = createSelector(
@@ -685,8 +963,6 @@ export const timelineIntervalsSelector = createSelector(
           console.warn('no interval for date: ', timelineDate); // eslint-disable-line no-console
         }
       });
-      console.log("Reload")
-
 
       intervals = intervalMap;
 

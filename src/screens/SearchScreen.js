@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, TextInput, Text,
-          TouchableWithoutFeedback, ScrollView } from 'react-native';
+          TouchableWithoutFeedback, ScrollView , TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 import { shape } from 'prop-types';
 import {
@@ -9,34 +9,110 @@ import {
 import { Feather } from '@expo/vector-icons';
 
 import CollectionRow from '../components/CollectionRow/CollectionRow';
-import { customCollectionsSelector, prebuiltCollectionsSelector,
-  collectionsCounterSelector, searchOnlyAllRecordsSelector,
-  globalSearchTermSelector} from '../redux/selectors';
+import { customCollectionsSelector, reportsFilteredByGlobalSearch,
+  collectionsCounterSelector,
+  globalSearchTermSelector, groupedRecordsFilteredByGlobalSearch,
+  collectionsFilteredByGlobalSearch, recordsFilteredByGlobalSearch,
+  collectionsLabelsSelector} from '../redux/selectors';
 import HeaderCountIcon from '../components/Icons/HeaderCountIcon';
 import Colors from '../constants/Colors';
-import { updateSearchTerm, updateGlobalSearch } from '../redux/action-creators';
-import BaseAccordion from '../components/Generic/BaseAccordion';
+import { updateSearchTerm, updateGlobalSearch, createCollection,
+  selectCollection, addResourceToCollection} from '../redux/action-creators';
+import SearchAccordionsContainer from '../components/SubTypeAccordionsContainer/SearchAccordionsContainer';
+
+
 
 const SearchScreen = ({ navigation, collections, reports, records, collectionsCounter,
-  searchTermFilter, globalSearchUpdate,searchTerm
+  searchTermFilter, globalSearchUpdate,searchTerm, allRecords,
+   createCollectionAction, addResourceToCollectionAction, allCollections,
+  selectCollectionAction, collectionsLabels
  }) => {
   const [title, onChangeTitle] = useState(searchTerm);
-  const [collectionsList, editCollectionsList] = useState(collections);
-  const [reportsList, editreportsList] = useState(reports);
+  const [collectionsText, setCollectionsText] = useState((Object.keys(collections).length == 1) ?
+                              "1 Collection" : Object.keys(collections).length  + " Collections");
+  const [reportsText, setReportsText] = useState((Object.keys(reports).length == 1) ?
+                              "1 Report" : Object.keys(reports).length  + " Reports");
+  const [recordsText, setRecordsText] = useState((allRecords.length == 1) ?
+                              "1 Records" : allRecords.length  + " Records");
+  const [moveToCatalog, setMoveToCatalog] = useState(false);
+  const [isAddingCollection, setIsAddingCollection] = useState(false);
+  const [newCollectionID, setCollectionID] = useState('');
+  const [recordsToAdd, setRecordsToAdd] = useState([]);
   useEffect(() => {
     searchTermFilter(title);
     globalSearchUpdate(title)
-    console.log(searchTerm)
+    setCollectionsText((Object.keys(collections).length == 1) ?
+                                "1 Collection" : Object.keys(collections).length  + " Collections")
+
+    setReportsText((Object.keys(reports).length == 1) ?
+                                "1 Report" : Object.keys(reports).length  + " Reports")
+    setRecordsText((allRecords.length == 1) ?
+                                "1 Records" : allRecords.length  + " Records")
+
   }, [title]);
 
+  useEffect(() => {
+    if (isAddingCollection) {
+      selectCollectionAction(Object.keys(allCollections)[Object.keys(allCollections).length - 1]);
+      if (moveToCatalog) {
+        setMoveToCatalog(false)
+        setIsAddingCollection(false);
+        addResourceToCollectionAction(Object.keys(allCollections)[Object.keys(allCollections).length - 1],
+                                      recordsToAdd)
 
+        navigation.navigate('Catalog');
+      }
+
+    }
+
+    // if (useState(collections )!== collections) {
+    // }
+  }, [collections, isAddingCollection, moveToCatalog]);
+  useEffect(() => {
+    var recordIds = []
+    for (var i =0; i< allRecords.length; i++){
+      recordIds.push(allRecords[i]["id"])
+    }
+    setRecordsToAdd(recordIds)
+  }, [allRecords]);
+
+  const isUniqueName = ({ text, isRename, label }) => {
+    // if action is rename, new label can be same as old label
+    if (isRename && (text.toLowerCase() === label.toLowerCase())) {
+      return true;
+    }
+    return !((collectionsLabels).includes(text.toLowerCase()));
+  };
+  const hasMinLength = (text) => text.length > 0;
+
+  const hasInputErrors = ({ text, isRename, label }) => {
+    if (!hasMinLength(text)) {
+      return true;
+    }
+    if (!isUniqueName({ text, isRename, label })) {
+      return true;
+    }
+    return false;
+  };
+
+  const saveAndContinue = () => {
+        if (title) {
+          if (hasInputErrors({ text: title, isRename: false, label: title })) {
+            return;
+          }
+          createCollectionAction(title);
+          setCollectionID(Object.keys(allCollections)[Object.keys(allCollections).length - 1]);
+          selectCollectionAction(Object.keys(allCollections)[Object.keys(allCollections).length - 1]);
+          addResourceToCollectionAction(Object.keys(allCollections)[Object.keys(allCollections).length - 1],
+                                        recordsToAdd)
+          setIsAddingCollection(true);
+          setMoveToCatalog(true);
+        }
+  };
   return (
   <SafeAreaView style={styles.safeAreaView}>
     <Header style={styles.header}>
       <View style={styles.headerTitleContainer}>
-        {/*collectionsCounter.preBuiltCount > 0 && (
-        <HeaderCountIcon count={collectionsCounter.preBuiltCount} />
-      )*/}
         <Title style={styles.headerText}>Search</Title>
       </View>
     </Header>
@@ -56,21 +132,36 @@ const SearchScreen = ({ navigation, collections, reports, records, collectionsCo
       </View>
     </View>
     <View style={(! title.length == 0 )? styles.numResultsView : { display: 'none' }}>
-    <TouchableWithoutFeedback>
+    <View style={styles.searchResultsContainer}>
       <ScrollView
         contentContainerStyle={styles.collectionRowContainer}
         keyboardShouldPersistTaps="handled"
       >
-      <Text>
+      <View style = {styles.textWrapper}>
+        <Text style={styles.labelText}>
+        {recordsText}
+        </Text>
 
-      </Text>
-      {Object.entries(records).map(([id, { subType }]) => (
-        <Text>{subType}</Text>
-      ))}
+        <TouchableOpacity style={styles.typeTextPill}
+        onPress={saveAndContinue}
+        >
+          <Text style={styles.typeText}>
+            {"Timeline"}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-       <Text>{"Collections"}</Text>
-
-        {Object.entries(collectionsList).map(([id, { label }]) => (
+      <View style={styles.scrollView}>
+        <SearchAccordionsContainer
+          data={records}
+          fromDetailsPanel
+        />
+      </View>
+        <View style = {styles.textWrapper}>
+          <Text style={styles.labelText}>{collectionsText}</Text>
+       </View>
+       <View style = {styles.collectionsContainer}>
+        {Object.entries(collections).map(([id, { label }]) => (
           <CollectionRow
             key={id}
             collectionId={id}
@@ -78,8 +169,15 @@ const SearchScreen = ({ navigation, collections, reports, records, collectionsCo
             navigation={navigation}
           />
         ))}
-        <Text>{"Reports"}</Text>
-        {Object.entries(reportsList).map(([id, { label }]) => (
+        </View>
+
+        <View style = {styles.textWrapper}>
+
+        <Text style={styles.labelText}>{reportsText}</Text>
+
+        </View>
+
+        {Object.entries(reports).map(([id, { label }]) => (
           <CollectionRow
             key={id}
             collectionId={id}
@@ -88,7 +186,9 @@ const SearchScreen = ({ navigation, collections, reports, records, collectionsCo
           />
         ))}
       </ScrollView>
-    </TouchableWithoutFeedback>
+    </View>
+    <View style = {styles.bottomMargin}>
+    </View>
     </View>
   </SafeAreaView>
 )};
@@ -99,18 +199,27 @@ SearchScreen.propTypes = {
   reports: shape({}).isRequired,
   records: shape({}).isRequired,
   collectionsCounter: shape({}).isRequired,
+  collectionsLabels: shape([]).isRequired,
+
 };
 
-const mapStateToProps = (state) => ({
-  collections: customCollectionsSelector(state),
-  reports:  prebuiltCollectionsSelector(state),
-  records: searchOnlyAllRecordsSelector(state),
+const mapStateToProps = (state, ownProps) => ({
+  allCollections: customCollectionsSelector(state, ownProps),
+  collections: collectionsFilteredByGlobalSearch(state),
+  reports:  reportsFilteredByGlobalSearch(state),
   collectionsCounter: collectionsCounterSelector(state),
-  searchTerm: globalSearchTermSelector(state)
+  searchTerm: globalSearchTermSelector(state),
+  records: groupedRecordsFilteredByGlobalSearch(state),
+  allRecords: recordsFilteredByGlobalSearch(state),
+  collectionsLabels: collectionsLabelsSelector(state),
 
 });
 const mapDispatchToProps = {
+  createCollectionAction: createCollection,
+  selectCollectionAction: selectCollection,
   searchTermFilter: updateSearchTerm,
+  addResourceToCollectionAction: addResourceToCollection,
+
   globalSearchUpdate: updateGlobalSearch
 };
 
@@ -118,7 +227,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(SearchScreen);
 
 const styles = StyleSheet.create({
   safeAreaView: {
-    flex: 1,
     backgroundColor: 'white',
   },
   collectionRowContainer: {
@@ -131,6 +239,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'black',
     fontSize: 18,
+
   },
   headerTitleContainer: {
     flexDirection: 'row',
@@ -163,19 +272,57 @@ const styles = StyleSheet.create({
   },
   borderPadding:{
     paddingTop:10,
-    paddingBottom:8,
-
+    paddingBottom:0,
     paddingHorizontal:6
 
   },
   numResultsView: {
     paddingTop: 10,
-    paddingLeft: 7,
-    flexDirection: 'row',
+    width:'100%',
+  },
+  scrollView:{
+    width:'100%',
+    paddingTop:10,
+
+  },
+  labelText:{
+    fontSize: 16,
+    paddingVertical:5,
+    paddingTop:3
+
+  },
+  searchResultsContainer:{
+    width:"100%",
+    marginBottom:200,
+  },
+  textWrapper:{
+    width:"100%",
+    paddingTop:6,
+    textAlign:"left",
+    paddingLeft:10,
+    flex:1,
+    flexDirection:"row"
+  },
+
+  bottomMargin:{
+  },
+  collectionsContainer:{
+    width:'100%',
+    paddingBottom:10,
+    paddingTop:0
   },
   dash: {
     paddingLeft: 0,
     paddingRight: 8,
     fontSize: 16,
+  },
+  typeTextPill: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 20,
+    marginLeft:"auto",
+    marginRight: 20,
   },
 });

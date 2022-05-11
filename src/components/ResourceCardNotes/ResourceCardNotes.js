@@ -27,14 +27,7 @@ const ResourceCardNotes = ({
     <View>
       <TouchableOpacity style={styles.collectionRow}>
         <View style={styles.collectionRowCountIconsContainer}>
-        <TouchableOpacity style={styles.infoIcon} onPress={() => setShowDetails(!showDetails)}>
-          <Ionicons
-            name={showDetails ? 'chevron-up' : 'chevron-down'}
-            size={24}
-            color={Colors.expandTimeline}
-          />
-        </TouchableOpacity>
-          <Text style={styles.labelText}>{"Record Notes"}</Text>
+        
         </View>
         <View style={styles.iconContainer}>
         </View>

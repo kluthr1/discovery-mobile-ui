@@ -41,7 +41,7 @@ const CatalogScreenHeader = ({ collection, navigation }) => {
     <Header style={styles.header}>
       <Left>
         {/* }<TouchableOpacity onPress={() => navigation.goBack()}> */}
-        <TouchableOpacity onPress={() => navigation.navigate('CollectionsList')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Entypo name="chevron-thin-left" size={20} color={Colors.headerIcon} />
         </TouchableOpacity>
       </Left>

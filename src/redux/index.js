@@ -11,6 +11,8 @@ import {
   activeCollectionIdReducer,
   isCreatingNewCollectionReducer,
   globalSearchTermReducer,
+  collectionSearchTermReducer,
+  reportsSearchTermReducer
 
 } from './reducers';
 import rootEpic from './epics';
@@ -29,7 +31,10 @@ const createStore = (patientId) => {
     activeCollectionId: activeCollectionIdReducer,
     collections: collectionsReducer,
     creatingCollection: isCreatingNewCollectionReducer,
-    globalSearchTerm: globalSearchTermReducer
+    globalSearchTerm: globalSearchTermReducer,
+    collectionsSearchTerm: collectionSearchTermReducer,
+    reportsSearchTerm: reportsSearchTermReducer,
+
   });
 
   const persistReducerConfig = {

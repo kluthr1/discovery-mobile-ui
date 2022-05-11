@@ -1,0 +1,216 @@
+import React from 'react';
+import {
+  StyleSheet, View,
+} from 'react-native';
+import { Accordion } from 'native-base';
+import { connect } from 'react-redux';
+import {
+  arrayOf, bool, number, shape, string,
+} from 'prop-types';
+import { Ionicons } from '@expo/vector-icons'; // eslint-disable-line import/no-extraneous-dependencies
+
+import {
+  activeCollectionIdSelector,
+} from '../../redux/selectors';
+import Colors from '../../constants/Colors';
+import ResourceCard from '../ResourceCard';
+import BaseText from '../Generic/BaseText';
+import CountIcon from '../Icons/CountIcon';
+import FocusedIcon from '../Icons/FocusedIcon';
+import MarkedIcon from '../Icons/MarkedIcon';
+import CollectionIcon from '../Icons/CollectionIcon';
+import RecordNumberBar from '../RecordNumberBar';
+
+const AccordionHeader = ({
+  item,
+  expanded,
+  fromDetailsPanel,
+  activeCollectionId,
+  fromDateAccordion,
+  maxRecordsCount,
+  fromTimeSavedAccordion,
+}) => {
+  const { headerLabel, headerCount, resourceIds } = item;
+  const chevronIcon = expanded
+    ? <Ionicons name="chevron-up" size={16} color={Colors.accordionChevronIcon} />
+    : <Ionicons name="chevron-down" size={16} color={Colors.accordionChevronIcon} />;
+  return (
+    <View style={[
+      styles.header,
+      (fromDetailsPanel && fromDateAccordion) ? styles.addPaddingLeft : null,
+    ]}
+    >
+      <View style={styles.headerTextContainer}>
+        <View style={styles.leftSideHeader}>
+          <View style={styles.leftIconContainer}>
+            {chevronIcon}
+            {!fromDetailsPanel && <CountIcon count={headerCount} />}
+          </View>
+          <BaseText style={styles.headerText}>
+            {headerLabel}
+          </BaseText>
+        </View>
+        {maxRecordsCount && (
+          <View style={styles.rightSideHeader}>
+            <RecordNumberBar count={headerCount} maxCount={maxRecordsCount} />
+          </View>
+        )}
+      </View>
+      <View style={styles.rightIconsContainer}>
+        
+      </View>
+    </View>
+  );
+};
+
+AccordionHeader.propTypes = {
+  item: shape({}).isRequired,
+  expanded: bool.isRequired,
+  fromDetailsPanel: bool,
+  activeCollectionId: string.isRequired,
+  fromDateAccordion: bool,
+  maxRecordsCount: number,
+  fromTimeSavedAccordion: bool,
+};
+
+AccordionHeader.defaultProps = {
+  fromDetailsPanel: false,
+  fromDateAccordion: false,
+  maxRecordsCount: null,
+  fromTimeSavedAccordion: null,
+};
+
+const ResourceCards = ({ item, activeCollectionId, fromDetailsPanel }) => item.resourceIds.map(
+  (resourceId, cardIndex) => (
+    <ResourceCard
+      key={resourceId}
+      index={cardIndex}
+      resourceId={resourceId}
+      collectionId={activeCollectionId}
+      fromDetailsPanel={fromDetailsPanel}
+    />
+  ),
+);
+
+ResourceCards.propTypes = {
+  item: shape({}).isRequired,
+  fromDetailsPanel: bool,
+  activeCollectionId: string.isRequired,
+};
+
+ResourceCards.defaultProps = {
+  fromDetailsPanel: false,
+};
+
+const SearchAccordion = ({
+  headerCount,
+  resourceIds,
+  activeCollectionId,
+  headerLabel,
+  fromDetailsPanel,
+  fromDateAccordion,
+  maxRecordsCount,
+  fromTimeSavedAccordion,
+}) => {
+  const dataArray = [{ headerLabel, headerCount, resourceIds }];
+
+  return (
+    <View style={styles.accordionContainer}>
+
+      <Accordion
+        style={styles.accordion}
+        dataArray={dataArray}
+        expanded={[]}
+        renderHeader={(item, expanded) => (
+          <AccordionHeader
+            item={item}
+            expanded={expanded}
+            fromDetailsPanel={fromDetailsPanel}
+            activeCollectionId={activeCollectionId}
+            fromDateAccordion={fromDateAccordion}
+            maxRecordsCount={maxRecordsCount}
+            fromTimeSavedAccordion={fromTimeSavedAccordion}
+          />
+        )}
+        renderContent={(item) => (
+          <ResourceCards
+            item={item}
+            fromDetailsPanel={fromDetailsPanel}
+            activeCollectionId={activeCollectionId}
+          />
+        )}
+      />
+    </View>
+  );
+};
+
+SearchAccordion.propTypes = {
+  headerCount: number.isRequired,
+  resourceIds: arrayOf(string.isRequired).isRequired,
+  activeCollectionId: string.isRequired,
+  headerLabel: string.isRequired,
+  fromDetailsPanel: bool,
+  fromDateAccordion: bool,
+  maxRecordsCount: number,
+  fromTimeSavedAccordion: bool,
+};
+
+SearchAccordion.defaultProps = {
+  fromDetailsPanel: false,
+  fromDateAccordion: false,
+  maxRecordsCount: null,
+  fromTimeSavedAccordion: null,
+};
+
+const mapStateToProps = (state) => ({
+  activeCollectionId: activeCollectionIdSelector(state),
+});
+
+export default connect(mapStateToProps, null)(SearchAccordion);
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    padding: 5,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    backgroundColor: 'white',
+  },
+  headerTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
+  },
+  headerText: {
+    marginLeft: 5,
+    color: 'black',
+    flex: 1,
+  },
+  rightIconsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  accordionContainer: {
+    backgroundColor: Colors.resourceCardBorder,
+  },
+  accordion: {
+    borderWidth: 0,
+  },
+  leftIconContainer: {
+    flexDirection: 'row',
+    marginTop: 2,
+    marginRight: 2,
+  },
+  addPaddingLeft: {
+    paddingLeft: 30,
+  },
+  leftSideHeader: {
+    flex: 35,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rightSideHeader: {
+    flex: 65,
+    paddingRight: 8,
+  },
+});
