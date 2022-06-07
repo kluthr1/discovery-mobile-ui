@@ -104,7 +104,11 @@ const Catalog = ({
   const [selectedItem, setSelectedItem] = useState(null)
   const [autoFillRecords, setAutoFillRecords] = useState([])
   const [resourceIds, setResourceIds] = useState([])
-  const [searchRecordText, setSearchRecordText] = useState("")
+  const [searchRecordText, setSearchRecordText] = useState(
+    ""
+    //(collection.searchFilter != undefined) ? collection.searchFilter : "a"""
+  )
+
   const [selectedItem2, setSelectedItem2] = useState(null)
   const [numTotalRecords, setNumTotalRecords] = useState("")
   const [numCollectionRecords, setNumCollectionRecords] = useState("")
@@ -116,6 +120,9 @@ const Catalog = ({
 
 
   useEffect(() => {
+    console.log("updating")
+    console.log(collection.searchFilter)
+    console.log(searchRecordText)
     searchTermFilter(searchRecordText);
     var newAutoFill = []
     var storeResourceIds = []
@@ -222,6 +229,8 @@ const Catalog = ({
                   closeOnSubmit={false}
                   resetOnClose = {false}
                   initialValue={{ id: '1' }} // or just '2'
+                  searchText={collection.searchFilter}
+                  activeCollection={collection}
                   onChangeText={setSearchRecordText}
                   dataSet={autoFillRecords}
                   collectionId={collection['id']}

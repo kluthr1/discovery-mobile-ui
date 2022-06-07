@@ -40,7 +40,7 @@ const ProfileScreen = () => (
           labelStyle: styles.tabText,
           indicatorStyle: {
             backgroundColor: Colors.mediumgrey,
-            height:3,
+            height:1.5,
           },
         }}
       >
@@ -92,19 +92,19 @@ const styles = StyleSheet.create({
   },
   logout: {
     backgroundColor: Colors.logoBlue,
-    paddingVertical: 8,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 14,
+    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },
   logoutText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
   },
   logoutContainer: {
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   horizontalPadding:{
     paddingHorizontal:20,

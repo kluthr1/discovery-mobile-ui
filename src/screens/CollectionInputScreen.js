@@ -338,36 +338,36 @@ const CollectionInputScreen = ({
         <View style={styles.switchRow}>
           <View style={styles.currentTextField}>
 
-            <Feather name="watch" size={18} color={Colors.currentCollectionColor} />
 
             <Text style={styles.switchText}>Current</Text>
+            <Switch
+              trackColor={{
+                false: Colors.mediumgrey,
+                true: Platform.OS === 'ios' ? Colors.primary : Colors.primaryLight,
+              }}
+              thumbColor={(Platform.OS === 'ios') ? 'white' : Colors[(current ? 'primary' : 'primaryLight')]}
+              onValueChange={() => currentSelection(!current)}
+              value={current || urgent}
+              disabled={urgent}
+            />
           </View>
 
-          <Switch
-            trackColor={{
-              false: Colors.mediumgrey,
-              true: Platform.OS === 'ios' ? Colors.primary : Colors.primaryLight,
-            }}
-            thumbColor={(Platform.OS === 'ios') ? 'white' : Colors[(current ? 'primary' : 'primaryLight')]}
-            onValueChange={() => currentSelection(!current)}
-            value={current || urgent}
-            disabled={urgent}
-          />
+
           <View style={styles.leftRightPadding}>
-            <Feather name="alert-triangle" size={18} color={Colors.destructive} />
 
             <Text variant="title" style={styles.switchText}>Urgent</Text>
+            <Switch
+              trackColor={{
+                false: Colors.mediumgrey,
+                true: Platform.OS === 'ios' ? Colors.primary : Colors.primaryLight,
+              }}
+              thumbColor={(Platform.OS === 'ios') ? 'white' : Colors[(urgent ? 'primary' : 'primaryLight')]}
+              onValueChange={() => urgentSelection(!urgent)}
+              value={urgent}
+            />
           </View>
 
-          <Switch
-            trackColor={{
-              false: Colors.mediumgrey,
-              true: Platform.OS === 'ios' ? Colors.primary : Colors.primaryLight,
-            }}
-            thumbColor={(Platform.OS === 'ios') ? 'white' : Colors[(urgent ? 'primary' : 'primaryLight')]}
-            onValueChange={() => urgentSelection(!urgent)}
-            value={urgent}
-          />
+
         </View>
       </View>
 
@@ -561,6 +561,7 @@ const styles = StyleSheet.create({
     paddingLeft: 2,
     paddingTop: 10,
     paddingRight: 10,
+
     fontSize: 14,
   },
 
@@ -590,7 +591,7 @@ const styles = StyleSheet.create({
   },
   leftRightPadding: {
     paddingLeft: 10,
-    paddingRight: 10,
+    paddingRight: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -623,6 +624,7 @@ const styles = StyleSheet.create({
 
   switchText: {
     paddingLeft: 5,
+    paddingRight:20,
   },
   empty_toucable: {
     width: '400%',

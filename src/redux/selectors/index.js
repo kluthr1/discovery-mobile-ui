@@ -111,6 +111,7 @@ export const activeSearchFilterSelector = createSelector(
 );
 
 function validSearchFilter(subType, filter){
+
   for(var x in filter["searchTerms"]){
     if(filter["searchTerms"][x] != undefined && filter["searchTerms"][x].split != undefined){
       var words  = filter["searchTerms"][x].split(' ')
@@ -347,7 +348,6 @@ const allRecordsWithFilterResponseSelector = createSelector(
         records,
       } = activeCollection;
 
-
     // eslint-disable-next-line max-len
     const { dateRangeStart = minimumDate, dateRangeEnd = maximumDate } = activeCollectionDateRangeFilter;
     return items.map(({
@@ -503,6 +503,18 @@ export const collectionsFilteredByGlobalSearch = createSelector(
                 }
               }
             }
+          });
+        }
+        if (!toAdd ||  toAdd){
+          Object.keys(collections[key]["notes"]).forEach(function(note) {
+            var text = collections[key]["notes"][note]["text"]
+
+            for(var j in words){
+              if(text.toLowerCase().includes(words[j].toLowerCase())){
+                  toAdd = true;
+              }
+            }
+
           });
         }
       }

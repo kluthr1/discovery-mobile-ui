@@ -307,7 +307,9 @@ const styles = StyleSheet.create({
 
   },
   selected:{
-    backgroundColor: Colors.primary
+    //backgroundColor: Colors.primary
+    height:'99%',
+    borderWidth:1
 
 
   },
@@ -318,7 +320,7 @@ const styles = StyleSheet.create({
   },
   selectedText:{
     fontWeight: "bold",
-    color: 'white'
+    //color: 'white'
 
 
   }

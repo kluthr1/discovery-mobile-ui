@@ -30,12 +30,16 @@ import MarkedIconWithUndo from '../Icons/MarkedIconWithUndo';
 
 export const AutocompleteDropdown = memo(
   forwardRef((props, ref) => {
+    console.log(props.activeCollection.searchFilter)
     const inputRef = useRef(null)
     const containerRef = useRef(null)
     const [selectedItem, setSelectedItem] = useState(null)
     const [direction, setDirection] = useState(props.direction ?? 'down')
     const [isOpened, setIsOpened] = useState(false)
-    const [searchText, setSearchText] =  useState('')
+    const [searchText, setSearchText] =  useState(""
+      //props.activeCollection.searchFilter
+    )
+
     const [dataSet, setDataSet] = useState(props.dataSet)
     const [openSuggestions, setOpenSuggestions] = useState(false)
 
@@ -90,7 +94,7 @@ export const AutocompleteDropdown = memo(
     }, [props.dataSet])
 
     useEffect(() => {
-      if (selectedItem) {
+      if (selectedItem ) {
         setSearchText(selectedItem.title ?? '')
 
       } else {
@@ -470,7 +474,7 @@ AutocompleteDropdown.propTypes = {
   resourceIds: PropTypes.element,
   previousResourceIds: PropTypes.element,
   previousHighlightIds: PropTypes.element,
-
+  searchText: PropTypes.string,
 }
 
 const styles = StyleSheet.create({

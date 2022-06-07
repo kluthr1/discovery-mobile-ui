@@ -54,7 +54,7 @@ const TimelineItems = ({
           x={0}
           width={config.BAR_WIDTH}
           height={Math.max(Math.min(typeItems.length, countForMaxBarHeight) * tickUnits, 4)}
-          color={Colors.darkgrey}
+          color={config.BAR_COLOR}
         />
       }
         {!typeCollectionItems.length == 0 && showCollection && showType &&(
@@ -77,7 +77,7 @@ const TimelineItems = ({
           x={0}
           width={config.BAR_WIDTH}
           height={Math.max(Math.min(items.length, countForMaxBarHeight) * tickUnits, 4)}
-          color={config.BAR_COLOR}
+          color={Colors.lightgrey}
         />}
         {(!collectionItems.length || !showCollection || !showAll) ? null : (
           <Bar
@@ -343,14 +343,14 @@ const styles = StyleSheet.create({
     width:15,
     borderWidth:0.5,
     borderRadius:4,
-    backgroundColor:Colors.primary
+    backgroundColor:Colors.lightgrey
   },
   showTypeBox:{
     height:15,
     width:15,
     borderWidth:0.5,
     borderRadius:4,
-    backgroundColor:Colors.darkgrey
+    backgroundColor:Colors.primary
 
   },
   showCollectionBox:{

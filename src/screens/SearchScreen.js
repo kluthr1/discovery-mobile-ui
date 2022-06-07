@@ -43,11 +43,20 @@ const SearchScreen = ({ navigation, collections, reports, records, collectionsCo
     globalSearchUpdate(title)
     setCollectionsText((Object.keys(collections).length == 1) ?
                                 "1 Collection" : Object.keys(collections).length  + " Collections")
-
+    var length = 0;
+    for (var i = 0; i < records.length; i++){
+      if(records[i] != undefined){
+        if (records[i]["subTypes"] != undefined){
+          for(var j = 0; j <records[i]["subTypes"].length; j++){
+            length = length + records[i]["subTypes"][j]["recordIds"].length;
+          }
+        }
+      }
+    }
     setReportsText((Object.keys(reports).length == 1) ?
                                 "1 Report" : Object.keys(reports).length  + " Reports")
-    setRecordsText((allRecords.length == 1) ?
-                                "1 Records" : allRecords.length  + " Records")
+    setRecordsText((length == 1) ?
+                                "1 Records" : length  + " Records")
 
   }, [title]);
 
@@ -59,7 +68,7 @@ const SearchScreen = ({ navigation, collections, reports, records, collectionsCo
         setIsAddingCollection(false);
         addResourceToCollectionAction(Object.keys(allCollections)[Object.keys(allCollections).length - 1],
                                       recordsToAdd)
-
+        searchTermFilter(title);
         navigation.navigate('Catalog');
       }
 
@@ -103,8 +112,6 @@ const SearchScreen = ({ navigation, collections, reports, records, collectionsCo
           createCollectionAction(title);
           setCollectionID(Object.keys(allCollections)[Object.keys(allCollections).length - 1]);
           selectCollectionAction(Object.keys(allCollections)[Object.keys(allCollections).length - 1]);
-          addResourceToCollectionAction(Object.keys(allCollections)[Object.keys(allCollections).length - 1],
-                                        recordsToAdd)
           setIsAddingCollection(true);
           setMoveToCatalog(true);
         }
@@ -151,15 +158,31 @@ const SearchScreen = ({ navigation, collections, reports, records, collectionsCo
         </TouchableOpacity>
       </View>
 
+      <View
+        style={{
+          borderBottomColor: Colors.mediumgrey,
+          borderBottomWidth: 1.5,
+          width:'100%'
+        }}
+      />
+
       <View style={styles.scrollView}>
         <SearchAccordionsContainer
           data={records}
           fromDetailsPanel
         />
       </View>
-        <View style = {styles.textWrapper}>
+        <View style = {styles.collectionsTextWrapper}>
           <Text style={styles.labelText}>{collectionsText}</Text>
        </View>
+
+       <View
+         style={{
+           borderBottomColor: Colors.mediumgrey,
+           borderBottomWidth: 1.5,
+           width:'100%'
+         }}
+       />
        <View style = {styles.collectionsContainer}>
         {Object.entries(collections).map(([id, { label }]) => (
           <CollectionRow
@@ -176,6 +199,14 @@ const SearchScreen = ({ navigation, collections, reports, records, collectionsCo
         <Text style={styles.labelText}>{reportsText}</Text>
 
         </View>
+
+        <View
+          style={{
+            borderBottomColor: Colors.mediumgrey,
+            borderBottomWidth: 1.5,
+            width:'100%'
+          }}
+        />
 
         {Object.entries(reports).map(([id, { label }]) => (
           <CollectionRow
@@ -288,7 +319,8 @@ const styles = StyleSheet.create({
   labelText:{
     fontSize: 16,
     paddingVertical:5,
-    paddingTop:3
+    paddingTop:3,
+    fontWeight: "bold"
 
   },
   searchResultsContainer:{
@@ -297,7 +329,7 @@ const styles = StyleSheet.create({
   },
   textWrapper:{
     width:"100%",
-    paddingTop:6,
+    paddingTop:9,
     textAlign:"left",
     paddingLeft:10,
     flex:1,
@@ -308,7 +340,7 @@ const styles = StyleSheet.create({
   },
   collectionsContainer:{
     width:'100%',
-    paddingBottom:10,
+    paddingBottom:15,
     paddingTop:0
   },
   dash: {
@@ -317,12 +349,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   typeTextPill: {
-    paddingVertical: 4,
+    paddingVertical: 2,
     paddingHorizontal: 8,
-    borderColor: 'black',
+    borderColor: 'white',
     borderWidth: 1,
     borderRadius: 20,
     marginLeft:"auto",
+    height:26,
     marginRight: 20,
+    marginTop:-2,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center'
   },
+  typeText:{
+    fontSize: 14,
+    color: 'white'
+
+  },
+  collectionsTextWrapper:{
+    width:"100%",
+    paddingTop:15,
+    textAlign:"left",
+    paddingLeft:10,
+    flex:1,
+    flexDirection:"row"
+  }
 });
